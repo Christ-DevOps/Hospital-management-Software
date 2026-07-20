@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
@@ -103,13 +104,13 @@
                                                 <tbody>
                                                 <tr>
                                                     <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->eqp_name;?></td>
-                                                    <td><?php echo $row->eqp_code;?></td>
-                                                    <td><?php echo $row->eqp_vendor;?></td>
-                                                    <td><?php echo $row->eqp_dept;?></td>
-                                                    <td><?php echo $row->eqp_qty;?></td>
+                                                    <td><?php echo escape_output($row->eqp_name);?></td>
+                                                    <td><?php echo escape_output($row->eqp_code);?></td>
+                                                    <td><?php echo escape_output($row->eqp_vendor);?></td>
+                                                    <td><?php echo escape_output($row->eqp_dept);?></td>
+                                                    <td><?php echo escape_output($row->eqp_qty);?></td>
                                                     <td>
-                                                        <a href="his_admin_view_single_eqp.php?eqp_code=<?php echo $row->eqp_code;?>" class="badge badge-success"><i class="far fa-eye "></i> View</a>
+                                                        <a href="his_admin_view_single_eqp.php?eqp_code=<?php echo escape_output($row->eqp_code);?>" class="badge badge-success"><i class="far fa-eye "></i> View</a>
                                                     </td>
                                                 </tr>
                                                 </tbody>

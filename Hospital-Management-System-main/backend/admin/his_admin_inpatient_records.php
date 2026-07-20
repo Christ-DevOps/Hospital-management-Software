@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
@@ -104,13 +105,13 @@
                                                 <tbody>
                                                 <tr>
                                                     <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->pat_fname;?> <?php echo $row->pat_lname;?></td>
-                                                    <td><?php echo $row->pat_number;?></td>
-                                                    <td><?php echo $row->pat_addr;?></td>
-                                                    <td><?php echo $row->pat_phone;?></td>
-                                                    <td><?php echo $row->pat_age;?> Years</td>
+                                                    <td><?php echo escape_output($row->pat_fname);?> <?php echo escape_output($row->pat_lname);?></td>
+                                                    <td><?php echo escape_output($row->pat_number);?></td>
+                                                    <td><?php echo escape_output($row->pat_addr);?></td>
+                                                    <td><?php echo escape_output($row->pat_phone);?></td>
+                                                    <td><?php echo escape_output($row->pat_age);?> Years</td>
                                                     
-                                                    <td><a href="his_admin_view_single_patient.php?pat_id=<?php echo $row->pat_id;?>&&pat_number=<?php echo $row->pat_number;?>" class="badge badge-success"><i class="mdi mdi-eye"></i> View</a></td>
+                                                    <td><a href="his_admin_view_single_patient.php?pat_id=<?php echo escape_output($row->pat_id);?>&&pat_number=<?php echo escape_output($row->pat_number);?>" class="badge badge-success"><i class="mdi mdi-eye"></i> View</a></td>
                                                 </tr>
                                                 </tbody>
                                             <?php  $cnt = $cnt +1 ; }?>

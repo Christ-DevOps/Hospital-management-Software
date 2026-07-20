@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
@@ -30,7 +31,7 @@
                 $v_number=$_GET['v_number'];
                 $ret="SELECT  * FROM his_vendor WHERE v_number = ?";
                 $stmt= $mysqli->prepare($ret) ;
-                $stmt->bind_param('i',$v_number);
+                $stmt->bind_param('s',$v_number);
                 $stmt->execute() ;//ok
                 $res=$stmt->get_result();
                 //$cnt=1;
@@ -55,7 +56,7 @@
                                                 <li class="breadcrumb-item active">Manage Vendors</li>
                                             </ol>
                                         </div>
-                                        <h4 class="page-title">#<?php echo $row->v_number;?></h4>
+                                        <h4 class="page-title">#<?php echo escape_output($row->v_number); ?></h4>
                                     </div>
                                 </div>
                             </div>     
@@ -77,19 +78,19 @@
                                             </div> <!-- end col -->
                                             <div class="col-xl-7">
                                                 <div class="pl-xl-3 mt-3 mt-xl-0">
-                                                    <h2 class="mb-3">Vendor Name : <?php echo $row->v_name;?></h2>
+                                                    <h2 class="mb-3">Vendor Name : <?php echo escape_output($row->v_name); ?></h2>
                                                     <hr>
-                                                    <h3 class="text-danger">Vendor Contacts : <?php echo $row->v_phone;?></h3>
+                                                    <h3 class="text-danger">Vendor Contacts : <?php echo escape_output($row->v_phone); ?></h3>
                                                     <hr>
-                                                    <h3 class="text-danger ">Vendor Email : <?php echo $row->v_email;?></h3>
+                                                    <h3 class="text-danger ">Vendor Email : <?php echo escape_output($row->v_email); ?></h3>
                                                     <hr>
-                                                    <h3 class="text-danger ">Vendor Address : <?php echo $row->v_adr;?></h3>
+                                                    <h3 class="text-danger ">Vendor Address : <?php echo escape_output($row->v_adr); ?></h3>
                                                     <hr>
                                                     
                                                     <h2 class="align-centre">Vendor Details</h2>
                                                     <hr>
                                                     <p class="text-muted mb-4">
-                                                        <?php echo $row->v_desc;?>
+                                                        <?php echo escape_output($row->v_desc); ?>
                                                     </p>
                                                     <hr>
                                                    

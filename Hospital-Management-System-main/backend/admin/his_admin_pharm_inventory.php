@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
@@ -101,14 +102,14 @@
 
                                                 <tbody>
                                                 <tr>
-                                                    <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->phar_name;?></td>
-                                                    <td><?php echo $row->phar_bcode;?></td>
-                                                    <td><?php echo $row->phar_vendor;?></td>
-                                                    <td><?php echo $row->phar_cat;?></td>
-                                                    <td><?php echo $row->phar_qty;?> Cartons</td>
+                                                    <td><?php echo escape_output($cnt); ?></td>
+                                                    <td><?php echo escape_output($row->phar_name); ?></td>
+                                                    <td><?php echo escape_output($row->phar_bcode); ?></td>
+                                                    <td><?php echo escape_output($row->phar_vendor); ?></td>
+                                                    <td><?php echo escape_output($row->phar_cat); ?></td>
+                                                    <td><?php echo escape_output($row->phar_qty); ?> Cartons</td>
 
-                                                    <td><a href="his_admin_view_single_pharm.php?phar_bcode=<?php echo $row->phar_bcode;?>" class="badge badge-success"><i class="far fa-eye "></i> View</a></td>
+                                                    <td><a href="his_admin_view_single_pharm.php?phar_bcode=<?php echo escape_output($row->phar_bcode); ?>" class="badge badge-success"><i class="far fa-eye "></i> View</a></td>
                                                 </tr>
                                                 </tbody>
                                             <?php  $cnt = $cnt +1 ; }?>

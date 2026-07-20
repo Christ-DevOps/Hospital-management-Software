@@ -1,7 +1,3 @@
 <?php
-$dbuser="root";
-$dbpass="";
-$host="localhost";
-$db="hmsm";
-$mysqli=new mysqli($host,$dbuser, $dbpass, $db);
-?>
+// Backward compatibility: old pages included this file directly.
+require_once dirname(__DIR__, 2) . '/config.php';

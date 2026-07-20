@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $doc_id = $_SESSION['doc_id'];
@@ -77,15 +78,16 @@
                                             </div> <!-- end col -->
                                             <div class="col-xl-7">
                                                 <div class="pl-xl-3 mt-3 mt-xl-0">
-                                                    <h2 class="mb-3">Pharmaceutical Name: <?php echo $row->pharm_cat_name;?></h2>
+                                                    <h2 class="mb-3">Pharmaceutical Name: <?php echo escape_output($row->pharm_cat_name); ?></h2>
                                                     <hr>
-                                                    <h6 class="text-danger">Phrmaceutical Vendor<?php echo $row->pharm_cat_vendor;?></h6>
+                                                    <h6 class="text-danger">Phrmaceutical Vendor<?php echo escape_output($row->pharm_cat_vendor); ?></h6>
                                                     <hr>
                                                     <p class="text-muted mb-4">
-                                                        <?php echo $row->pharm_cat_desc;?>
+                                                        <?php echo escape_output($row->pharm_cat_desc); ?>
                                                     </p>
                                                    <!--
                                                     <form class="form-inline mb-4">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                         <label class="my-1 mr-2" for="quantityinput">Quantity</label>
                                                         <select class="custom-select my-1 mr-sm-3" id="quantityinput">
                                                             <option value="1">1</option>

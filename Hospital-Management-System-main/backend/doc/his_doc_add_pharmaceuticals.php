@@ -1,7 +1,10 @@
 
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['add_pharmaceutical']))
 		{
 			$phar_name = $_POST['phar_name'];
@@ -86,6 +89,7 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
                                                     <label for="inputEmail4" class="col-form-label">Pharmaceutical Name</label>
@@ -111,7 +115,7 @@
                                                         while($row=$res->fetch_object())
                                                         {
                                                     ?>
-                                                        <option><?php echo $row->pharm_cat_name;?></option>
+                                                        <option><?php echo escape_output($row->pharm_cat_name); ?></option>
                                                     <?php }?>    
                                                     </select>
                                                 </div>
@@ -130,7 +134,7 @@
                                                         {
                                                             //$mysqlDateTime = $row->s_pat_date;
                                                     ?>
-                                                        <option><?php echo $row->v_name;?></option>
+                                                        <option><?php echo escape_output($row->v_name); ?></option>
 
                                                     <?php }?>   
                                                     </select>
@@ -142,7 +146,7 @@
                                                         $length = 10;    
                                                         $phar_bcode =  substr(str_shuffle('0123456789'),1,$length);
                                                     ?>
-                                                    <input required="required" type="text" value="<?php echo $phar_bcode;?>" name="phar_bcode" class="form-control"  id="inputPassword4">
+                                                    <input required="required" type="text" value="<?php echo escape_output($phar_bcode); ?>" name="phar_bcode" class="form-control"  id="inputPassword4">
                                             </div>
 
                                             <div class="form-group">

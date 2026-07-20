@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   //$aid=$_SESSION['ad_id'];
@@ -31,7 +32,7 @@
                 $phar_bcode=$_GET['phar_bcode'];
                 $ret="SELECT  * FROM his_pharmaceuticals WHERE phar_bcode = ?";
                 $stmt= $mysqli->prepare($ret) ;
-                $stmt->bind_param('i',$phar_bcode);
+                $stmt->bind_param('s',$phar_bcode);
                 $stmt->execute() ;//ok
                 $res=$stmt->get_result();
                 //$cnt=1;
@@ -56,7 +57,7 @@
                                                 <li class="breadcrumb-item active">View Pharmaceuticals</li>
                                             </ol>
                                         </div>
-                                        <h4 class="page-title">#<?php echo $row->phar_bcode;?> - <?php echo $row->phar_name;?></h4>
+                                        <h4 class="page-title">#<?php echo escape_output($row->phar_bcode); ?> - <?php echo escape_output($row->phar_name); ?></h4>
                                     </div>
                                 </div>
                             </div>     
@@ -78,19 +79,20 @@
                                             </div> <!-- end col -->
                                             <div class="col-xl-7">
                                                 <div class="pl-xl-3 mt-3 mt-xl-0">
-                                                    <h2 class="mb-3">Pharmaceutical Name : <?php echo $row->phar_name;?></h2>
+                                                    <h2 class="mb-3">Pharmaceutical Name : <?php echo escape_output($row->phar_name); ?></h2>
                                                     <hr>
-                                                    <h4 class="text-danger">Pharmaceutical Vendor : <?php echo $row->phar_vendor;?></h4>
+                                                    <h4 class="text-danger">Pharmaceutical Vendor : <?php echo escape_output($row->phar_vendor); ?></h4>
                                                     <hr>
-                                                    <h4 class="text-danger">Pharmaceutical Quantity : <?php echo $row->phar_qty;?> Cartons</h4>
+                                                    <h4 class="text-danger">Pharmaceutical Quantity : <?php echo escape_output($row->phar_qty); ?> Cartons</h4>
                                                     <hr>
                                                     <h4 class="text-danger">Pharmaceutical Description</h4>
 
                                                     <p class="text-muted mb-4">
-                                                        <?php echo $row->phar_desc;?>
+                                                        <?php echo escape_output($row->phar_desc); ?>
                                                     </p>
                                                    <!--
                                                     <form class="form-inline mb-4">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                         <label class="my-1 mr-2" for="quantityinput">Quantity</label>
                                                         <select class="custom-select my-1 mr-sm-3" id="quantityinput">
                                                             <option value="1">1</option>

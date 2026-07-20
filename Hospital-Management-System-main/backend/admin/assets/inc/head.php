@@ -5,6 +5,7 @@
         <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
         <meta content="MartDevelopers" name="author" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="theme-color" content="#2E37A4" />
         <!-- App favicon -->
         <link rel="shortcut icon" href="assets/images/favicon.ico">
 
@@ -15,7 +16,12 @@
         <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
         <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
-         <!-- Loading button css -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <!-- HMS Theme CSS (load after app.min.css for overrides) -->
+        <link href="../assets/css/hms-theme.css" rel="stylesheet" type="text/css" />
+        <!-- Loading button css -->
          <link href="assets/libs/ladda/ladda-themeless.min.css" rel="stylesheet" type="text/css" />
 
         <!-- Footable css -->
@@ -30,7 +36,7 @@
                 <script>
                             setTimeout(function () 
                             { 
-                                swal("Success","<?php echo $success;?>","success");
+                                swal("Success","<?php echo escape_output($success); ?>","success");
                             },
                                 100);
                 </script>
@@ -42,7 +48,7 @@
                 <script>
                             setTimeout(function () 
                             { 
-                                swal("Failed","<?php echo $err;?>","Failed");
+                                swal("Failed","<?php echo escape_output($err); ?>","Failed");
                             },
                                 100);
                 </script>

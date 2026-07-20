@@ -1,27 +1,18 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
-  if(isset($_GET['delete_account']))
-  {
-        $id=intval($_GET['delete_account']);
-        $adn="delete from his_accounts where acc_number=?";
-        $stmt= $mysqli->prepare($adn);
-        $stmt->bind_param('i',$id);
-        $stmt->execute();
-        $stmt->close();	 
-  
-          if($stmt)
-          {
-            $success = "Payable Account Records Deleted";
-          }
-            else
-            {
-                $err = "Try Again Later";
-            }
-    }
+    $deleteResult = process_post_delete($mysqli, 'delete_account', 'delete from his_accounts where acc_number=?', 's', [], 'Account deleted');
+  if ($deleteResult !== null) {
+      if (isset($deleteResult['success'])) {
+          $success = $deleteResult['success'];
+      } else {
+          $err = $deleteResult['err'];
+      }
+  }
 ?>
 
 <!DOCTYPE html>
@@ -116,14 +107,14 @@
                                                 <tbody>
                                                 <tr>
                                                     <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->acc_name;?></td>
-                                                    <td><?php echo $row->acc_number;?></td>
-                                                    <td>$ <?php echo $row->acc_amount;?></td>
+                                                    <td><?php echo escape_output($row->acc_name);?></td>
+                                                    <td><?php echo escape_output($row->acc_number);?></td>
+                                                    <td>$ <?php echo escape_output($row->acc_amount);?></td>
 
                                                     <td>
-                                                        <a href="his_admin_view_single_payable_account.php?acc_number=<?php echo $row->acc_number;?>" class="badge badge-success"><i class="fas fa-eye "></i> View</a>
-                                                        <a href="his_admin_update_single_payable_account.php?acc_number=<?php echo $row->acc_number;?>" class="badge badge-warning"><i class="fas fa-clipboard-check "></i> Update</a>
-                                                        <a href="his_admin_manage_acc_payable.php?delete_account=<?php echo $row->acc_number;?>" class="badge badge-danger"><i class="fas fa-trash-alt "></i> Delete</a>
+                                                        <a href="his_admin_view_single_payable_account.php?acc_number=<?php echo escape_output($row->acc_number);?>" class="badge badge-success"><i class="fas fa-eye "></i> View</a>
+                                                        <a href="his_admin_update_single_payable_account.php?acc_number=<?php echo escape_output($row->acc_number);?>" class="badge badge-warning"><i class="fas fa-clipboard-check "></i> Update</a>
+                                                        <a href="his_admin_manage_acc_payable.php?delete_account=<?php echo escape_output($row->acc_number);?>" class="badge badge-danger"><i class="fas fa-trash-alt "></i> Delete</a>
 
 
                                                     </td>

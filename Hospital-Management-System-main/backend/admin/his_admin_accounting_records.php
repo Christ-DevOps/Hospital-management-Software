@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
@@ -99,13 +100,13 @@
 
                                                 <tbody>
                                                 <tr>
-                                                    <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->acc_name;?></td>
-                                                    <td><?php echo $row->acc_number;?></td>
-                                                    <td>$ <?php echo $row->acc_amount;?></td>
-                                                    <td><?php echo $row->acc_type;?></td>
+                                                    <td><?php echo escape_output($cnt); ?></td>
+                                                    <td><?php echo escape_output($row->acc_name); ?></td>
+                                                    <td><?php echo escape_output($row->acc_number); ?></td>
+                                                    <td>$ <?php echo escape_output($row->acc_amount); ?></td>
+                                                    <td><?php echo escape_output($row->acc_type); ?></td>
                                                     <td>
-                                                        <a href="his_admin_view_single_account.php?acc_number=<?php echo $row->acc_number;?>" class="badge badge-success"><i class="fas fa-eye "></i> View</a>
+                                                        <a href="his_admin_view_single_account.php?acc_number=<?php echo escape_output($row->acc_number); ?>" class="badge badge-success"><i class="fas fa-eye "></i> View</a>
                                                     </td>
                                                 </tr>
                                                 </tbody>

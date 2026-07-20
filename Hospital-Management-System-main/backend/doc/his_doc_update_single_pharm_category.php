@@ -1,7 +1,10 @@
 
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['update_pharmaceutical_category']))
 		{
 			$pharm_cat_name = $_GET['pharm_cat_name'];
@@ -81,7 +84,7 @@
                                             <li class="breadcrumb-item active">Manage Pharmaceutical Category</li>
                                         </ol>
                                     </div>
-                                    <h4 class="page-title"><?php echo $row->pharm_cat_name;?></h4>
+                                    <h4 class="page-title"><?php echo escape_output($row->pharm_cat_name); ?></h4>
                                 </div>
                             </div>
                         </div>     
@@ -94,20 +97,21 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="form-row" >
                                                 <div class="form-group col-md-6" style="display:none">
                                                     <label for="inputEmail4" class="col-form-label">Pharmaceutical Category Name</label>
-                                                    <input  type="text" value="<?php echo $row->pharm_cat_name;?>" required="required" name="pharm_cat_name" class="form-control" id="inputEmail4" >
+                                                    <input  type="text" value="<?php echo escape_output($row->pharm_cat_name); ?>" required="required" name="pharm_cat_name" class="form-control" id="inputEmail4" >
                                                 </div>
                                                 <div class="form-group col-md-12">
                                                     <label for="inputPassword4" class="col-form-label">Pharmaceutical Category Vendor</label>
-                                                    <input required="required" value="<?php echo $row->pharm_cat_vendor;?>" type="text" name="pharm_cat_vendor" class="form-control"  id="inputPassword4">
+                                                    <input required="required" value="<?php echo escape_output($row->pharm_cat_vendor); ?>" type="text" name="pharm_cat_vendor" class="form-control"  id="inputPassword4">
                                                 </div>
                                             </div>
 
                                             <div class="form-group">
                                                 <label for="inputAddress" class="col-form-label">Pharmaceutical Category Description</label>
-                                                <textarea required="required" type="text" class="form-control" name="pharm_cat_desc" id="editor"><?php echo $row->pharm_cat_desc;?></textarea>
+                                                <textarea required="required" type="text" class="form-control" name="pharm_cat_desc" id="editor"><?php echo escape_output($row->pharm_cat_desc); ?></textarea>
                                             </div>
 
                                            <button type="submit" name="update_pharmaceutical_category" class="ladda-button btn btn-danger" data-style="expand-right">Update Category</button>

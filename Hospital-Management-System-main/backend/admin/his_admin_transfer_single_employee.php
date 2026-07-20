@@ -1,7 +1,10 @@
 <!--Server side code to handle  Patient Registration-->
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['trans_dept']))
 		{
             $doc_dept=$_POST['doc_dept'];
@@ -79,7 +82,7 @@
                             $doc_number=$_GET['doc_number'];
                             $ret="SELECT  * FROM his_docs WHERE doc_number=?";
                             $stmt= $mysqli->prepare($ret) ;
-                            $stmt->bind_param('i',$doc_number);
+                            $stmt->bind_param('s',$doc_number);
                             $stmt->execute() ;//ok
                             $res=$stmt->get_result();
                             //$cnt=1;
@@ -93,30 +96,31 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
                                                     <label for="inputEmail4" class="col-form-label">First Name</label>
-                                                    <input type="text" required="required" readonly value="<?php echo $row->doc_fname;?>" name="doc_fname" class="form-control" id="inputEmail4" >
+                                                    <input type="text" required="required" readonly value="<?php echo escape_output($row->doc_fname); ?>" name="doc_fname" class="form-control" id="inputEmail4" >
                                                 </div>
                                                 <div class="form-group col-md-6">
                                                     <label for="inputPassword4" class="col-form-label">Last Name</label>
-                                                    <input required="required" type="text" readonly value="<?php echo $row->doc_lname;?>" name="doc_lname" class="form-control"  id="inputPassword4">
+                                                    <input required="required" type="text" readonly value="<?php echo escape_output($row->doc_lname); ?>" name="doc_lname" class="form-control"  id="inputPassword4">
                                                 </div>
                                             </div>
 
                                             <div class="form-group">
                                                 <label for="inputAddress" class="col-form-label">Email</label>
-                                                <input required="required" type="email" readonly value="<?php echo $row->doc_email;?>" class="form-control" name="doc_email" id="inputAddress">
+                                                <input required="required" type="email" readonly value="<?php echo escape_output($row->doc_email); ?>" class="form-control" name="doc_email" id="inputAddress">
                                             </div>
 
                                             <div class="form-group">
                                                 <label for="inputAddress" class="col-form-label">Employee Number</label>
-                                                <input required="required" type="email" readonly value="<?php echo $row->doc_number;?>" class="form-control" name="doc_email" id="inputAddress">
+                                                <input required="required" type="email" readonly value="<?php echo escape_output($row->doc_number); ?>" class="form-control" name="doc_email" id="inputAddress">
                                             </div>
 
                                             <div class="form-group">
                                                 <label for="inputAddress" class="col-form-label">Employee Current Working Department </label>
-                                                <input required="required" type="email" readonly value="<?php echo $row->doc_dept;?>" class="form-control" name="doc_email" id="inputAddress">
+                                                <input required="required" type="email" readonly value="<?php echo escape_output($row->doc_dept); ?>" class="form-control" name="doc_email" id="inputAddress">
                                             </div>
                                             
                                             <div class="form-group">

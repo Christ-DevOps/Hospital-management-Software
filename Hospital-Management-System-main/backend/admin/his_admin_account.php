@@ -1,61 +1,69 @@
 <?php
 	session_start();
-	include('assets/inc/config.php');
-		if(isset($_POST['update_profile']))
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
+				if(isset($_POST['update_profile']))
 		{
 			$ad_fname=$_POST['ad_fname'];
 			$ad_lname=$_POST['ad_lname'];
 			$ad_id=$_SESSION['ad_id'];
             $ad_email=$_POST['ad_email'];
-           // $doc_pwd=sha1(md5($_POST['doc_pwd']));
-            $ad_dpic=$_FILES["ad_dpic"]["name"];
-		    move_uploaded_file($_FILES["ad_dpic"]["tmp_name"],"assets/images/users/".$_FILES["ad_dpic"]["name"]);
-
-            //sql to insert captured values
-			$query="UPDATE his_admin SET ad_fname=?, ad_lname=?,  ad_email=?, ad_dpic=? WHERE ad_id = ?";
-			$stmt = $mysqli->prepare($query);
-			$rc=$stmt->bind_param('ssssi', $ad_fname, $ad_lname, $ad_email, $ad_dpic, $ad_id);
-			$stmt->execute();
-			/*
-			*Use Sweet Alerts Instead Of This Fucked Up Javascript Alerts
-			*echo"<script>alert('Successfully Created Account Proceed To Log In ');</script>";
-			*/ 
-			//declare a varible which will be passed to alert function
-			if($stmt)
-			{
-				$success = "Profile Updated";
-			}
-			else {
-				$err = "Please Try Again Or Try Later";
-			}
-			
-			
+            $ad_dpic = null;
+            if (!empty($_FILES["ad_dpic"]["name"])) {
+                $upload = handle_profile_upload('ad_dpic', __DIR__ . '/assets/images/users');
+                if (isset($upload['err'])) {
+                    $err = $upload['err'];
+                } else {
+                    $ad_dpic = $upload['filename'];
+                }
+            }
+            if (!isset($err)) {
+                if ($ad_dpic !== null) {
+                    $query="UPDATE his_admin SET ad_fname=?, ad_lname=?, ad_email=?, ad_dpic=? WHERE ad_id = ?";
+                    $stmt = $mysqli->prepare($query);
+                    $stmt->bind_param('ssssi', $ad_fname, $ad_lname, $ad_email, $ad_dpic, $ad_id);
+                } else {
+                    $query="UPDATE his_admin SET ad_fname=?, ad_lname=?, ad_email=? WHERE ad_id = ?";
+                    $stmt = $mysqli->prepare($query);
+                    $stmt->bind_param('sssi', $ad_fname, $ad_lname, $ad_email, $ad_id);
+                }
+                if ($stmt->execute()) {
+                    $success = "Profile Updated";
+                } else {
+                    $err = "Please Try Again Or Try Later";
+                }
+                $stmt->close();
+            }
         }
-        //Change Password
         if(isset($_POST['update_pwd']))
 		{
             $ad_id=$_SESSION['ad_id'];
-            $ad_pwd=sha1(md5($_POST['ad_pwd']));//double encrypt 
-            
-            //sql to insert captured values
-			$query="UPDATE his_admin SET ad_pwd =? WHERE ad_id = ?";
-			$stmt = $mysqli->prepare($query);
-			$rc=$stmt->bind_param('si', $ad_pwd, $ad_id);
-			$stmt->execute();
-			/*
-			*Use Sweet Alerts Instead Of This Fucked Up Javascript Alerts
-			*echo"<script>alert('Successfully Created Account Proceed To Log In ');</script>";
-			*/ 
-			//declare a varible which will be passed to alert function
-			if($stmt)
-			{
-				$success = "Password Updated";
-			}
-			else {
-				$err = "Please Try Again Or Try Later";
-			}
-			
-			
+            $current_pwd = $_POST['current_pwd'] ?? '';
+            $new_pwd = $_POST['ad_pwd'] ?? '';
+            $stmt=$mysqli->prepare("SELECT ad_pwd FROM his_admin WHERE ad_id=?");
+            $stmt->bind_param('i', $ad_id);
+            $stmt->execute();
+            $stmt->bind_result($existing_hash);
+            $stmt->fetch();
+            $stmt->close();
+            if (!verify_password_hash($current_pwd, $existing_hash)) {
+                $err = 'Current password is incorrect.';
+            } elseif (strlen($new_pwd) < 8) {
+                $err = 'New password must be at least 8 characters.';
+            } else {
+                $ad_pwd=password_hash($new_pwd, PASSWORD_DEFAULT);
+                $query="UPDATE his_admin SET ad_pwd =? WHERE ad_id = ?";
+                $stmt = $mysqli->prepare($query);
+                $stmt->bind_param('si', $ad_pwd, $ad_id);
+                if ($stmt->execute()) {
+                    $success = "Password Updated";
+                } else {
+                    $err = "Please Try Again Or Try Later";
+                }
+                $stmt->close();
+            }
 		}
 ?>
 <!DOCTYPE html>
@@ -104,7 +112,7 @@
                                                 <li class="breadcrumb-item active">Profile</li>
                                             </ol>
                                         </div>
-                                        <h4 class="page-title"><?php echo $row->ad_fname;?> <?php echo $row->ad_lname;?>'s Profile</h4>
+                                        <h4 class="page-title"><?php echo escape_output($row->ad_fname); ?> <?php echo escape_output($row->ad_lname); ?>'s Profile</h4>
                                     </div>
                                 </div>
                             </div>
@@ -113,14 +121,14 @@
                             <div class="row">
                                 <div class="col-lg-4 col-xl-4">
                                     <div class="card-box text-center">
-                                        <img src="assets/images/users/<?php echo $row->ad_dpic;?>" class="rounded-circle avatar-lg img-thumbnail"
+                                        <img src="assets/images/users/<?php echo escape_output($row->ad_dpic); ?>" class="rounded-circle avatar-lg img-thumbnail"
                                             alt="profile-image">
 
-                                        <h4 class="mb-0"><?php echo $row->ad_fname;?> <?php echo $row->ad_lname;?></h4>
+                                        <h4 class="mb-0"><?php echo escape_output($row->ad_fname); ?> <?php echo escape_output($row->ad_lname); ?></h4>
                                         <p class="text-muted">@System_Administrator_HMIS</p>
                                         <div class="text-left mt-3">
-                                            <p class="text-muted mb-2 font-13"><strong>Full Name :</strong> <span class="ml-2"><?php echo $row->ad_fname;?> <?php echo $row->ad_lname;?></span></p>
-                                            <p class="text-muted mb-2 font-13"><strong>Email :</strong> <span class="ml-2 "><?php echo $row->ad_email;?></span></p>
+                                            <p class="text-muted mb-2 font-13"><strong>Full Name :</strong> <span class="ml-2"><?php echo escape_output($row->ad_fname); ?> <?php echo escape_output($row->ad_lname); ?></span></p>
+                                            <p class="text-muted mb-2 font-13"><strong>Email :</strong> <span class="ml-2 "><?php echo escape_output($row->ad_email); ?></span></p>
                                         </div>
 
                                     </div> <!-- end card-box -->
@@ -146,18 +154,19 @@
                                             <div class="tab-pane show active" id="aboutme">
 
                                             <form method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                     <h5 class="mb-4 text-uppercase"><i class="mdi mdi-account-circle mr-1"></i> Personal Info</h5>
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="firstname">First Name</label>
-                                                                <input type="text" name="ad_fname"  class="form-control" id="firstname" placeholder="<?php echo $row->ad_fname;?>">
+                                                                <input type="text" name="ad_fname"  class="form-control" id="firstname" placeholder="<?php echo escape_output($row->ad_fname); ?>">
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="lastname">Last Name</label>
-                                                                <input type="text" name="ad_lname" class="form-control" id="lastname" placeholder="<?php echo $row->ad_lname;?>">
+                                                                <input type="text" name="ad_lname" class="form-control" id="lastname" placeholder="<?php echo escape_output($row->ad_lname); ?>">
                                                             </div>
                                                         </div> <!-- end col -->
                                                     </div> <!-- end row -->
@@ -165,13 +174,13 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="useremail">Email Address</label>
-                                                                <input type="email" name="ad_email" class="form-control" id="useremail" placeholder="<?php echo $row->ad_email;?>">
+                                                                <input type="email" name="ad_email" class="form-control" id="useremail" placeholder="<?php echo escape_output($row->ad_email); ?>">
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="useremail">Profile Picture</label>
-                                                                <input type="file" name="ad_dpic" class="form-control btn btn-success" id="useremail" placeholder="<?php echo $row->ad_email;?>">
+                                                                <input type="file" name="ad_dpic" class="form-control btn btn-success" id="useremail" placeholder="<?php echo escape_output($row->ad_email); ?>">
                                                             </div>
                                                         </div>
                                                         
@@ -283,12 +292,13 @@
 
                                             <div class="tab-pane" id="settings">
                                                 <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                     <h5 class="mb-4 text-uppercase"><i class="mdi mdi-account-circle mr-1"></i> Personal Info</h5>
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="firstname">Old Password</label>
-                                                                <input type="password" class="form-control" id="firstname" placeholder="Enter Old Password">
+                                                                <input type="password" class="form-control" id="firstname" name="current_pwd" required placeholder="Enter Old Password">
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">

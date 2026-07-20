@@ -1,7 +1,10 @@
 
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['add_pharmaceutical_category']))
 		{
 			$pharm_cat_name = $_POST['pharm_cat_name'];
@@ -84,6 +87,7 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
                                                     <label for="inputEmail4" class="col-form-label">Pharmaceutical Category Name</label>
@@ -105,7 +109,7 @@
                                                         {
                                                             //$mysqlDateTime = $row->s_pat_date;
                                                     ?>
-                                                        <option><?php echo $row->v_name;?></option>
+                                                        <option><?php echo escape_output($row->v_name); ?></option>
 
                                                     <?php }?>   
                                                     </select>

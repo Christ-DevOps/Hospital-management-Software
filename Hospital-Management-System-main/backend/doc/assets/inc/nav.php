@@ -15,6 +15,7 @@
 
             <li class="d-none d-sm-block">
                 <form class="app-search">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                     <div class="app-search-box">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Search...">
@@ -31,9 +32,9 @@
             
             <li class="dropdown notification-list">
                 <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                    <img src="assets/images/users/<?php echo $row->doc_dpic;?>" alt="dpic" class="rounded-circle">
+                    <img src="assets/images/users/<?php echo escape_output($row->doc_dpic); ?>" alt="dpic" class="rounded-circle">
                     <span class="pro-user-name ml-1">
-                        <?php echo $row->doc_fname;?> <?php echo $row->doc_lname;?> <i class="mdi mdi-chevron-down"></i> 
+                        <?php echo escape_output($row->doc_fname); ?> <?php echo escape_output($row->doc_lname); ?> <i class="mdi mdi-chevron-down"></i> 
                     </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right profile-dropdown ">
@@ -73,7 +74,7 @@
         <div class="logo-box">
             <a href="his_admin_dashboard.php" class="logo text-center">
                 <span class="logo-lg">
-                    <img src="assets/images/logo-light.png" alt="" height="18">
+                    <img src="assets/images/logo-dark.png" alt="HMS" height="22">
                     <!-- <span class="logo-lg-text-light">UBold</span> -->
                 </span>
                 <span class="logo-sm">

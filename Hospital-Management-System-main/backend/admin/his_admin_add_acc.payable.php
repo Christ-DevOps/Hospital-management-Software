@@ -1,7 +1,10 @@
 <!--Server side code to handle  Patient Registration-->
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['add_acc']))
 		{
 			$acc_name=$_POST['acc_name'];
@@ -86,6 +89,7 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
 
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
@@ -104,7 +108,7 @@
                                                     $account_number =  substr(str_shuffle('0123456789'),1,$length);
                                                 ?>
                                                 <label for="inputZip" class="col-form-label">Account Number</label>
-                                                <input type="text" name="acc_number" value="<?php echo $account_number;?>" class="form-control" id="inputZip">
+                                                <input type="text" name="acc_number" value="<?php echo escape_output($account_number); ?>" class="form-control" id="inputZip">
                                             </div>
 
                                             <div class="form-group ">

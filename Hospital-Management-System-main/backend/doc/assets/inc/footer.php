@@ -8,3 +8,6 @@
         </div>
     </div>
 </footer>
+
+<!-- HMS Motion: deferred so it runs after sync vendor/app scripts -->
+<script defer src="../assets/js/hms-motion.js"></script>

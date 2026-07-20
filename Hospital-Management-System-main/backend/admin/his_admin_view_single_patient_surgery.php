@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
@@ -30,7 +31,7 @@
                 $s_number=$_GET['s_number'];
                 $ret="SELECT  * FROM his_surgery WHERE s_number = ?";
                 $stmt= $mysqli->prepare($ret) ;
-                $stmt->bind_param('i',$s_number);
+                $stmt->bind_param('s',$s_number);
                 $stmt->execute() ;//ok
                 $res=$stmt->get_result();
                 //$cnt=1;
@@ -56,7 +57,7 @@
                                                 <li class="breadcrumb-item active">View Single Records</li>
                                             </ol>
                                         </div>
-                                        <h4 class="page-title">#<?php echo $row->s_number;?></h4>
+                                        <h4 class="page-title">#<?php echo escape_output($row->s_number); ?></h4>
                                     </div>
                                 </div>
                             </div>     
@@ -79,22 +80,23 @@
                                             <div class="col-xl-7">
                                             
                                                 <div class="pl-xl-3 mt-3 mt-xl-0">
-                                                    <h2 class="mb-3">Patient's Name : <?php echo $row->s_pat_name;?></h2>
+                                                    <h2 class="mb-3">Patient's Name : <?php echo escape_output($row->s_pat_name); ?></h2>
                                                     <hr>
-                                                    <h3 class="align-centre ">Patient Number : <?php echo $row->s_pat_number;?></h3>
+                                                    <h3 class="align-centre ">Patient Number : <?php echo escape_output($row->s_pat_number); ?></h3>
                                                     <hr>
-                                                    <h3 class="align-centre ">Patient Ailment : <?php echo $row->s_pat_ailment;?></h3>
+                                                    <h3 class="align-centre ">Patient Ailment : <?php echo escape_output($row->s_pat_ailment); ?></h3>
                                                     <hr>
                                                     <h3 class="align-centre ">Date Surgery Conducted : <?php echo date("d/m/Y", strtotime($mysqlDateTime));?></h3>
                                                     <hr>
-                                                    <h2 class="align-centre">Surgeon :  <?php echo $row->s_doc;?> </h2>
+                                                    <h2 class="align-centre">Surgeon :  <?php echo escape_output($row->s_doc); ?> </h2>
                                                     <hr>
-                                                    <h2 class="align-centre">Surgery Status : <span class ="btn btn-success"> <?php echo $row->s_pat_status;?></span> </h2>
+                                                    <h2 class="align-centre">Surgery Status : <span class ="btn btn-success"> <?php echo escape_output($row->s_pat_status); ?></span> </h2>
                                                     <hr>
                                                     
                                                     
                                                    <!--
                                                     <form class="form-inline mb-4">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                         <label class="my-1 mr-2" for="quantityinput">Quantity</label>
                                                         <select class="custom-select my-1 mr-sm-3" id="quantityinput">
                                                             <option value="1">1</option>

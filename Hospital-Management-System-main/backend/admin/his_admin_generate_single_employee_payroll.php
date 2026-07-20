@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
@@ -75,7 +76,7 @@
                                                 <img src="assets/images/logo-dark.png" alt="" height="20">
                                             </div>
                                             <div class="float-right">
-                                                <h4 class="m-0 d-print-none"><?php echo $row->pay_doc_name;?> Payroll</h4>
+                                                <h4 class="m-0 d-print-none"><?php echo escape_output($row->pay_doc_name);?> Payroll</h4>
                                             </div>
                                         </div>
             
@@ -90,9 +91,9 @@
                                             <div class="col-md-4 offset-md-2">
                                                 <div class="mt-3 float-right">
                                                     <p class="m-b-10"><strong>Generated Date : </strong> <span class="float-right"> &nbsp;&nbsp;&nbsp;&nbsp; <?php echo date("d-m-Y - h:m:s", strtotime($mysqlDateTime));?> </span></p>
-                                                    <p class="m-b-10"><strong>Payroll Status : </strong> <span class="float-right"><span class="badge badge-success"><?php echo $row->pay_status;?></span></span></p>
-                                                    <p class="m-b-10"><strong>Payroll Number. : </strong> <span class="float-right"><?php echo $row->pay_number;?></span></p>
-                                                    <p class="m-b-10"><strong>Employee Number. : </strong> <span class="float-right"><?php echo $row->pay_doc_number;?></span></p>
+                                                    <p class="m-b-10"><strong>Payroll Status : </strong> <span class="float-right"><span class="badge badge-success"><?php echo escape_output($row->pay_status);?></span></span></p>
+                                                    <p class="m-b-10"><strong>Payroll Number. : </strong> <span class="float-right"><?php echo escape_output($row->pay_number);?></span></p>
+                                                    <p class="m-b-10"><strong>Employee Number. : </strong> <span class="float-right"><?php echo escape_output($row->pay_doc_number);?></span></p>
 
                                                 </div>
                                             </div><!-- end col -->
@@ -127,7 +128,7 @@
                                                                     $cnt=1;
                                                                     while($row=$res->fetch_object())
                                                                     { ?>
-                                                                    <b><?php echo $row->doc_dept;?></b> <br/>
+                                                                    <b><?php echo escape_output($row->doc_dept);?></b> <br/>
                                                                     <?php }?>
 
                                                                 </td>
@@ -151,7 +152,7 @@
                                                                         //get total salary after tax reduction
                                                                         $total_salary = $salary - $taxable_salary;
                                                                 ?>
-                                                            <td>$ <?php echo $row->pay_emp_salary;?></td>
+                                                            <td>$ <?php echo escape_output($row->pay_emp_salary);?></td>
                                                             <td>16%</td>
                                                             
                                                             <td class="text-right">$ <?php echo $taxable_salary;?></td>
@@ -169,13 +170,13 @@
                                                     <h6 class="text-muted">Notes:</h6>
             
                                                     <small class="text-muted">
-                                                         <?php echo $row->pay_descr;?>
+                                                         <?php echo escape_output($row->pay_descr);?>
                                                     </small>
                                                 </div>
                                             </div> <!-- end col -->
                                             <div class="col-sm-6">
                                                 <div class="float-right">
-                                                    <p><b>Sub-total:</b> <span class="float-right">$ <?php echo $row->pay_emp_salary;?></span></p>
+                                                    <p><b>Sub-total:</b> <span class="float-right">$ <?php echo escape_output($row->pay_emp_salary);?></span></p>
                                                     <p><b>PAYE Tax (16%) :</b> <span class="float-right"> &nbsp;&nbsp;&nbsp; <?php echo $taxable_salary;?> </span></p>
                                                     <h3>$ <?php echo $total_salary;?></h3>
                                                 </div>

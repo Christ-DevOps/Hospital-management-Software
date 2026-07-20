@@ -1,17 +1,39 @@
-// Font 
-$heading-font: 'Ubuntu', sans-serif;
-$body-font: 'Roboto', sans-serif;
+// Font — Preclinic uses Inter
+$heading-font: 'Inter', 'Ubuntu', sans-serif;
+$body-font: 'Inter', 'Roboto', sans-serif;
 
-// Color 
-$primary-color: #244cfd;
-$heading-text: #222222;
-$body-text: #777777;
+// Color — Preclinic palette
+$primary-color: #2E37A4;
+$primary-hover: #3C449C;
+$primary-transparent: #ECEDF7;
+$secondary: #00D3C7;
+$secondary-hover: #17C2B9;
+$success: #27AE60;
+$success-hover: #37A465;
+$success-transparent: #F4FBF7;
+$info: #2F80ED;
+$info-transparent: #F4F9FE;
+$warning: #E2B93B;
+$warning-transparent: #FEFBF5;
+$danger: #EF1E1E;
+$danger-transparent: #FEF4F4;
+
+// Pastel tints for stat cards
+$tint-blue: #EEF1FD;
+$tint-green: #E7F8EF;
+$tint-amber: #FFF4E5;
+$tint-purple: #F2EEFC;
+
+// Neutrals
+$heading-text: #0A1B39;
+$body-text: #6C7688;
+$text-light: #9DA4B0;
 $light: #ffffff;
-$dark: #f9f9fd;
-$border: #f9f9f9;
-$shadow: rgba(0,0,0,.1);
-$footer: #12151f;
-$placeholder: #b0b0b0;
-$overlay: rgba(1,2,14,.4);
-$gradient: linear-gradient(to right, #244cfd, #15e4fd);
-$blog-category: rgba(36, 76, 253, .7);
+$dark: #F5F6F8;
+$border: #E7E8EB;
+$shadow: rgba(104, 134, 177, 0.15);
+$footer: #0A1B39;
+$placeholder: #9DA4B0;
+$overlay: rgba(46, 55, 164, 0.45);
+$gradient: linear-gradient(180deg, #4E59DB 0%, #0C1367 100%);
+$blog-category: rgba(46, 55, 164, 0.7);

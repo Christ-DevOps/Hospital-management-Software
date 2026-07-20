@@ -1,0 +1,298 @@
+/**
+ * HMS Auth — centered SaaS login/register/reset
+ * Load AFTER hms-theme.css
+ */
+
+/* Page shell */
+body.authentication-bg,
+body.hms-auth-page {
+  min-height: 100vh !important;
+  margin: 0;
+  font-family: var(--hms-font-family);
+  background-color: var(--hms-background) !important;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 15% 10%, rgba(46, 55, 164, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 45% at 90% 90%, rgba(0, 211, 199, 0.10) 0%, transparent 50%),
+    linear-gradient(180deg, #EEF1FD 0%, var(--hms-background) 40%, #F8F9FB 100%) !important;
+  background-attachment: fixed;
+}
+
+body.authentication-bg.authentication-bg-pattern {
+  background-image:
+    radial-gradient(ellipse 70% 50% at 15% 10%, rgba(46, 55, 164, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 45% at 90% 90%, rgba(0, 211, 199, 0.10) 0%, transparent 50%),
+    linear-gradient(180deg, #EEF1FD 0%, var(--hms-background) 40%, #F8F9FB 100%) !important;
+}
+
+body.hms-auth-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(46, 55, 164, 0.05) 1px, transparent 0);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Kill legacy split if markup remains */
+.hms-auth-split,
+.hms-auth-brand,
+.hms-auth-form-panel {
+  display: contents;
+}
+.hms-auth-brand,
+.hms-auth-decoration,
+.hms-auth-brand-inner {
+  display: none !important;
+}
+
+/* Centered stage */
+.hms-auth-stage {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--hms-space-6) var(--hms-space-4);
+}
+
+.hms-auth-back {
+  position: absolute;
+  top: var(--hms-space-5);
+  left: var(--hms-space-5);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--hms-text-secondary);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: var(--hms-radius-sm);
+  transition: color var(--hms-transition-fast), background var(--hms-transition-fast);
+}
+.hms-auth-back:hover {
+  color: var(--hms-primary);
+  background: var(--hms-primary-soft);
+  text-decoration: none;
+}
+.hms-auth-back:focus-visible {
+  outline: none;
+  box-shadow: var(--hms-shadow-focus);
+}
+
+/* Card */
+.hms-auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--hms-white);
+  border: 1px solid var(--hms-border);
+  border-radius: var(--hms-radius-lg);
+  box-shadow: var(--hms-shadow-hover);
+  padding: var(--hms-space-8) var(--hms-space-6);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 380ms ease-out, transform 380ms ease-out;
+}
+.hms-auth-card.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.hms-auth-card.is-wide {
+  max-width: 540px;
+}
+
+.hms-auth-brandmark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: var(--hms-space-5);
+}
+.hms-auth-brandmark img {
+  height: 32px;
+  width: auto;
+  margin-bottom: var(--hms-space-3);
+  filter: none;
+}
+.hms-auth-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hms-primary);
+  background: var(--hms-primary-soft);
+  padding: 4px 10px;
+  border-radius: var(--hms-radius-full);
+  margin-bottom: var(--hms-space-3);
+}
+.hms-auth-card h1,
+.hms-auth-card .hms-auth-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--hms-text-primary);
+  margin: 0 0 var(--hms-space-2);
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+.hms-auth-card .hms-auth-sub {
+  font-size: 14px;
+  color: var(--hms-text-secondary);
+  text-align: center;
+  margin: 0 0 var(--hms-space-6);
+  line-height: 1.55;
+}
+
+/* Forms */
+.hms-auth-card .form-group {
+  margin-bottom: var(--hms-space-4);
+}
+.hms-auth-card label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--hms-text-primary);
+  margin-bottom: 6px;
+}
+.hms-auth-card .form-control {
+  height: 42px;
+  border: 1px solid var(--hms-border) !important;
+  border-radius: var(--hms-radius-sm) !important;
+  font-size: 14px;
+  color: var(--hms-text-primary);
+  padding: 8px 12px;
+  background: var(--hms-white);
+  transition: border-color var(--hms-transition-fast), box-shadow var(--hms-transition-fast);
+  box-shadow: none !important;
+}
+.hms-auth-card .form-control:focus {
+  border-color: var(--hms-primary) !important;
+  box-shadow: var(--hms-shadow-focus) !important;
+}
+.hms-auth-card .form-control:invalid:not(:placeholder-shown):not(:focus) {
+  border-color: var(--hms-danger) !important;
+}
+.hms-auth-card .form-control:valid:not(:placeholder-shown):not(:focus) {
+  border-color: var(--hms-border) !important;
+}
+
+.hms-auth-pass {
+  position: relative;
+}
+.hms-auth-pass .form-control {
+  padding-right: 44px;
+}
+.hms-auth-toggle {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--hms-text-muted);
+  border-radius: var(--hms-radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--hms-transition-fast), background var(--hms-transition-fast);
+}
+.hms-auth-toggle:hover {
+  color: var(--hms-primary);
+  background: var(--hms-primary-soft);
+}
+.hms-auth-toggle:focus-visible {
+  outline: none;
+  box-shadow: var(--hms-shadow-focus);
+}
+
+.hms-auth-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--hms-space-3);
+}
+
+.hms-auth-card .btn-primary,
+.hms-auth-card .btn-success {
+  background: var(--hms-primary) !important;
+  border-color: var(--hms-primary) !important;
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 14px;
+  height: 44px;
+  border-radius: var(--hms-radius-sm);
+  box-shadow: 0 6px 14px var(--hms-primary-glow);
+  transition: background var(--hms-transition-fast), border-color var(--hms-transition-fast), transform var(--hms-transition-fast), box-shadow var(--hms-transition-fast);
+}
+.hms-auth-card .btn-primary:hover,
+.hms-auth-card .btn-success:hover,
+.hms-auth-card .btn-primary:focus,
+.hms-auth-card .btn-success:focus {
+  background: var(--hms-primary-hover) !important;
+  border-color: var(--hms-primary-hover) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px var(--hms-primary-glow);
+}
+.hms-auth-card .btn-block { display: block; width: 100%; }
+
+.hms-auth-links {
+  margin-top: var(--hms-space-5);
+  text-align: center;
+  font-size: 13px;
+  color: var(--hms-text-secondary);
+}
+.hms-auth-links a {
+  color: var(--hms-primary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--hms-transition-fast);
+}
+.hms-auth-links a:hover { color: var(--hms-primary-hover); }
+
+.hms-auth-foot {
+  margin-top: var(--hms-space-5);
+  font-size: 12px;
+  color: var(--hms-text-muted);
+  text-align: center;
+}
+
+/* Hide old account-pages chrome noise */
+.hms-auth-stage .account-pages,
+.hms-auth-stage .card.bg-pattern {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.hms-auth-stage .footer,
+.hms-auth-stage .footer-alt {
+  display: none;
+}
+
+@media (max-width: 575.98px) {
+  .hms-auth-card {
+    padding: var(--hms-space-6) var(--hms-space-4);
+    border-radius: var(--hms-radius-md);
+  }
+  .hms-auth-row { grid-template-columns: 1fr; }
+  .hms-auth-back {
+    position: static;
+    align-self: flex-start;
+    margin-bottom: var(--hms-space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hms-auth-card {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

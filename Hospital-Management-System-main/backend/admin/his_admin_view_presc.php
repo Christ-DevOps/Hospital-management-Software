@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
@@ -104,15 +105,15 @@
 
                                                 <tbody>
                                                 <tr>
-                                                    <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->pres_pat_name;?></td>
-                                                    <td><?php echo $row->pres_pat_number;?></td>
-                                                    <td><?php echo $row->pres_pat_addr;?></td>
-                                                    <td><?php echo $row->pres_pat_ailment;?></td>
-                                                    <td><?php echo $row->pres_pat_age;?> Years</td>
-                                                    <td><?php echo $row->pres_pat_type;?></td>
+                                                    <td><?php echo escape_output($cnt); ?></td>
+                                                    <td><?php echo escape_output($row->pres_pat_name); ?></td>
+                                                    <td><?php echo escape_output($row->pres_pat_number); ?></td>
+                                                    <td><?php echo escape_output($row->pres_pat_addr); ?></td>
+                                                    <td><?php echo escape_output($row->pres_pat_ailment); ?></td>
+                                                    <td><?php echo escape_output($row->pres_pat_age); ?> Years</td>
+                                                    <td><?php echo escape_output($row->pres_pat_type); ?></td>
                                                     
-                                                    <td><a href="his_admin_view_single_pres.php?pres_number=<?php echo $row->pres_number;?>&&pres_id=<?php echo $row->pres_id;?>" class="badge badge-success"><i class="fas fa-eye"></i> View Prescription</a></td>
+                                                    <td><a href="his_admin_view_single_pres.php?pres_number=<?php echo escape_output($row->pres_number); ?>&&pres_id=<?php echo escape_output($row->pres_id); ?>" class="badge badge-success"><i class="fas fa-eye"></i> View Prescription</a></td>
                                                 </tr>
                                                 </tbody>
                                             <?php  $cnt = $cnt +1 ; }?>

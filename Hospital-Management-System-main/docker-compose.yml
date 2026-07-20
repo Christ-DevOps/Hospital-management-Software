@@ -1,0 +1,25 @@
+services:
+  web:
+    image: php:8.2-apache
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html
+    command: >
+      bash -c "docker-php-ext-install mysqli
+      && sed -ri 's!/var/www/html!/var/www/html!g' /etc/apache2/sites-available/*.conf
+      && apache2-foreground"
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hospital-management
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./Database/hmisphp.sql:/docker-entrypoint-initdb.d/01-schema.sql

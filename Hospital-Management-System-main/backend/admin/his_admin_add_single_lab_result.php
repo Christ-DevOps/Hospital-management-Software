@@ -1,7 +1,10 @@
 <!--Server side code to handle  Patient Registration-->
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+  include('assets/inc/checklogin.php');
+  check_login();
 		if(isset($_POST['add_patient_lab_result']))
 		{
 			$lab_pat_name = $_POST['lab_pat_name'];
@@ -97,16 +100,17 @@
                                             <h4 class="header-title">Fill all fields</h4>
                                             <!--Add Patient Form-->
                                             <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                 <div class="form-row">
 
                                                     <div class="form-group col-md-6">
                                                         <label for="inputEmail4" class="col-form-label">Patient Name</label>
-                                                        <input type="text" required="required" readonly name="lab_pat_name" value="<?php echo $row->lab_pat_name;?>" class="form-control" id="inputEmail4" placeholder="Patient's First Name">
+                                                        <input type="text" required="required" readonly name="lab_pat_name" value="<?php echo escape_output($row->lab_pat_name);?>" class="form-control" id="inputEmail4" placeholder="Patient's First Name">
                                                     </div>
 
                                                     <div class="form-group col-md-6">
                                                         <label for="inputPassword4" class="col-form-label">Patient Ailment</label>
-                                                        <input required="required" type="text" readonly name="lab_pat_ailment" value="<?php echo $row->lab_pat_ailment;?>" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
+                                                        <input required="required" type="text" readonly name="lab_pat_ailment" value="<?php echo escape_output($row->lab_pat_ailment);?>" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
                                                     </div>
 
                                                 </div>
@@ -115,7 +119,7 @@
 
                                                     <div class="form-group col-md-12">
                                                         <label for="inputEmail4" class="col-form-label">Patient Number</label>
-                                                        <input type="text" required="required" readonly name="lab_pat_number" value="<?php echo $row->lab_pat_number;?>" class="form-control" id="inputEmail4" placeholder="DD/MM/YYYY">
+                                                        <input type="text" required="required" readonly name="lab_pat_number" value="<?php echo escape_output($row->lab_pat_number);?>" class="form-control" id="inputEmail4" placeholder="DD/MM/YYYY">
                                                     </div>
 
 
@@ -127,7 +131,7 @@
 
                                                 <div class="form-group">
                                                         <label for="inputAddress" class="col-form-label">Laboratory Tests</label>
-                                                        <textarea required="required"  type="text" class="form-control" name="lab_pat_tests" id="editor"><?php echo $row->lab_pat_tests;?></textarea>
+                                                        <textarea required="required"  type="text" class="form-control" name="lab_pat_tests" id="editor"><?php echo escape_output($row->lab_pat_tests);?></textarea>
                                                 </div>
 
                                                 <div class="form-group">

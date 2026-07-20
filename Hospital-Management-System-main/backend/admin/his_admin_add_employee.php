@@ -1,14 +1,17 @@
 <!--Server side code to handle  Patient Registration-->
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['add_doc']))
 		{
 			$doc_fname=$_POST['doc_fname'];
 			$doc_lname=$_POST['doc_lname'];
 			$doc_number=$_POST['doc_number'];
             $doc_email=$_POST['doc_email'];
-            $doc_pwd=sha1(md5($_POST['doc_pwd']));
+            $doc_pwd=password_hash($_POST['doc_pwd'], PASSWORD_DEFAULT);
             
             //sql to insert captured values
 			$query="INSERT INTO his_docs (doc_fname, doc_lname, doc_number, doc_email, doc_pwd) values(?,?,?,?,?)";
@@ -85,6 +88,7 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
                                                     <label for="inputEmail4" class="col-form-label">First Name</label>
@@ -102,7 +106,7 @@
                                                         $patient_number =  substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'),1,$length);
                                                     ?>
                                                     <label for="inputZip" class="col-form-label">Doctor Number</label>
-                                                    <input type="text" name="doc_number" value="<?php echo $patient_number;?>" class="form-control" id="inputZip">
+                                                    <input type="text" name="doc_number" value="<?php echo escape_output($patient_number); ?>" class="form-control" id="inputZip">
                                                 </div>
 
                                             <div class="form-group">

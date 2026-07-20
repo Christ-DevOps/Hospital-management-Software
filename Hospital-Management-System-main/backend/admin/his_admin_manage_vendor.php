@@ -1,27 +1,18 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
-  if(isset($_GET['delete_vendor_number']))
-  {
-        $id=intval($_GET['delete_vendor_number']);
-        $adn="delete from his_vendor where v_number=?";
-        $stmt= $mysqli->prepare($adn);
-        $stmt->bind_param('i',$id);
-        $stmt->execute();
-        $stmt->close();	 
-  
-          if($stmt)
-          {
-            $success = "Vendor Records Deleted";
-          }
-            else
-            {
-                $err = "Try Again Later";
-            }
-    }
+    $deleteResult = process_post_delete($mysqli, 'delete_vendor_number', 'delete from his_vendor where v_number=?', 's', [], 'Vendor record deleted');
+  if ($deleteResult !== null) {
+      if (isset($deleteResult['success'])) {
+          $success = $deleteResult['success'];
+      } else {
+          $err = $deleteResult['err'];
+      }
+  }
 ?>
 
 <!DOCTYPE html>
@@ -120,16 +111,16 @@
 
                                                 <tbody>
                                                 <tr>
-                                                    <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->v_name;?></td>
-                                                    <td><?php echo $row->v_number;?></td>
-                                                    <td><?php echo $row->v_email;?></td>
+                                                    <td><?php echo escape_output($cnt); ?></td>
+                                                    <td><?php echo escape_output($row->v_name); ?></td>
+                                                    <td><?php echo escape_output($row->v_number); ?></td>
+                                                    <td><?php echo escape_output($row->v_email); ?></td>
 
                                                     
                                                     <td>
-                                                        <a href="his_admin_view_single_vendor.php?v_number=<?php echo $row->v_number;?>" class="badge badge-success"><i class="fas fa-eye"></i> View</a>
-                                                        <a href="his_admin_update_single_vendor.php?v_number=<?php echo $row->v_number;?>" class="badge badge-success"><i class="fas fa-edit"></i> Update</a>
-                                                        <a href="his_admin_manage_vendor.php?delete_vendor_number=<?php echo $row->v_number?>" class="badge badge-danger"><i class="fas fa-trash"></i> Delete Record</a>
+                                                        <a href="his_admin_view_single_vendor.php?v_number=<?php echo escape_output($row->v_number); ?>" class="badge badge-success"><i class="fas fa-eye"></i> View</a>
+                                                        <a href="his_admin_update_single_vendor.php?v_number=<?php echo escape_output($row->v_number); ?>" class="badge badge-success"><i class="fas fa-edit"></i> Update</a>
+                                                        <?php echo render_delete_button('delete_vendor_number', $row->v_number); ?>
                                                     </td>
                                                 </tr>
                                                 </tbody>

@@ -1,7 +1,10 @@
 <!--Server side code to handle  Patient Registration-->
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+  include('assets/inc/checklogin.php');
+  check_login();
 		if(isset($_POST['add_vendor']))
 		{
 			$v_name=$_POST['v_name'];
@@ -10,7 +13,7 @@
             $v_email=$_POST['v_email'];
             $v_phone = $_POST['v_phone'];
             $v_desc = $_POST['v_desc'];
-            //$doc_pwd=sha1(md5($_POST['doc_pwd']));
+            //$doc_pwd=password_hash($_POST['doc_pwd'], PASSWORD_DEFAULT);
             
             //sql to insert captured values
 			$query="INSERT INTO his_vendor (v_name, v_adr, v_number, v_email, v_phone, v_desc) values(?,?,?,?,?,?)";
@@ -87,6 +90,7 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="form-row">
                                                 <div class="form-group col-md-4">
                                                     <label for="inputEmail4" class="col-form-label">Vendor Name</label>

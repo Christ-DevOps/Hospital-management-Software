@@ -1,28 +1,19 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
   /*
-  if(isset($_GET['delete_pay_number']))
-  {
-        $id=intval($_GET['delete_pay_number']);
-        $adn="delete from his_payrolls where pay_number=?";
-        $stmt= $mysqli->prepare($adn);
-        $stmt->bind_param('i',$id);
-        $stmt->execute();
-        $stmt->close();	 
-  
-          if($stmt)
-          {
-            $success = "Payroll Record Deleted";
-          }
-            else
-            {
-                $err = "Try Again Later";
-            }
-    }
+    $deleteResult = process_post_delete($mysqli, 'delete_pay_number', 'delete from his_payrolls where pay_number=?', 's', [], 'Payroll deleted');
+  if ($deleteResult !== null) {
+      if (isset($deleteResult['success'])) {
+          $success = $deleteResult['success'];
+      } else {
+          $err = $deleteResult['err'];
+      }
+  }
     */
 
 ?>
@@ -123,15 +114,15 @@
                                                 <tbody>
                                                 <tr>
                                                     <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->pay_doc_name;?></td>
-                                                    <td><?php echo $row->pay_doc_number;?></td>
-                                                    <td><?php echo $row->pay_number;?></td> 
+                                                    <td><?php echo escape_output($row->pay_doc_name);?></td>
+                                                    <td><?php echo escape_output($row->pay_doc_number);?></td>
+                                                    <td><?php echo escape_output($row->pay_number);?></td> 
                                                     <td><?php echo date("d/m/Y - h:m:s", strtotime($mysqlDateTime));?></td>
-                                                    <td>$ <?php echo $row->pay_emp_salary;?></td>
+                                                    <td>$ <?php echo escape_output($row->pay_emp_salary);?></td>
                                                  
                                                     <td>
-                                                       <!-- <a href="his_admin_manage_payrolls.php?delete_pay_number=<?php echo $row->pay_number;?>" class="badge badge-danger"><i class="fas fa-trash"></i> Delete</a> -->
-                                                        <a href="his_admin_generate_single_employee_payroll.php?pay_number=<?php echo $row->pay_number;?>&&pay_doc_number=<?php echo $row->pay_doc_number;?>" class="badge badge-success"><i class="fas fa-file-invoice-dollar "></i> Generate Payroll</a>
+                                                       <!-- <a href="his_admin_manage_payrolls.php?delete_pay_number=<?php echo escape_output($row->pay_number);?>" class="badge badge-danger"><i class="fas fa-trash"></i> Delete</a> -->
+                                                        <a href="his_admin_generate_single_employee_payroll.php?pay_number=<?php echo escape_output($row->pay_number);?>&&pay_doc_number=<?php echo escape_output($row->pay_doc_number);?>" class="badge badge-success"><i class="fas fa-file-invoice-dollar "></i> Generate Payroll</a>
 
                                                     </td>
                                                 </tr>

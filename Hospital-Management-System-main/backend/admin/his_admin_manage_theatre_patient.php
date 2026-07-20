@@ -1,27 +1,18 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
-  if(isset($_GET['delete_s_number']))
-  {
-        $id=intval($_GET['delete_s_number']);
-        $adn="delete from his_surgery where s_number=?";
-        $stmt= $mysqli->prepare($adn);
-        $stmt->bind_param('i',$id);
-        $stmt->execute();
-        $stmt->close();	 
-  
-          if($stmt)
-          {
-            $success = "Surgery Patient's  Records Deleted";
-          }
-            else
-            {
-                $err = "Try Again Later";
-            }
-    }
+    $deleteResult = process_post_delete($mysqli, 'delete_s_number', 'delete from his_surgery where s_number=?', 's', [], 'Surgery record deleted');
+  if ($deleteResult !== null) {
+      if (isset($deleteResult['success'])) {
+          $success = $deleteResult['success'];
+      } else {
+          $err = $deleteResult['err'];
+      }
+  }
 ?>
 
 <!DOCTYPE html>
@@ -122,17 +113,17 @@
 
                                                 <tbody>
                                                 <tr>
-                                                    <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->s_pat_name;?></td>
-                                                    <td><?php echo $row->s_pat_number;?></td>
-                                                    <td><?php echo $row->s_pat_ailment;?></td>
-                                                    <td><?php echo $row->s_doc;?></td>
+                                                    <td><?php echo escape_output($cnt); ?></td>
+                                                    <td><?php echo escape_output($row->s_pat_name); ?></td>
+                                                    <td><?php echo escape_output($row->s_pat_number); ?></td>
+                                                    <td><?php echo escape_output($row->s_pat_ailment); ?></td>
+                                                    <td><?php echo escape_output($row->s_doc); ?></td>
                                                     <td><?php echo date("d/m/Y", strtotime($mysqlDateTime));?></td>
 
                                                     
                                                     <td>
-                                                        <a href="his_admin_update_single_patient_surgery.php?s_number=<?php echo $row->s_number;?>" class="badge badge-success"><i class="fas fa-edit"></i> Update</a>
-                                                        <a href="his_admin_manage_theatre_patient.php?delete_s_number=<?php echo $row->s_number?>" class="badge badge-danger"><i class="fas fa-trash"></i> Delete Record</a>
+                                                        <a href="his_admin_update_single_patient_surgery.php?s_number=<?php echo escape_output($row->s_number); ?>" class="badge badge-success"><i class="fas fa-edit"></i> Update</a>
+                                                        <?php echo render_delete_button('delete_s_number', $row->s_number); ?>
                                                     </td>
                                                 </tr>
                                                 </tbody>

@@ -1,30 +1,21 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $doc_id = $_SESSION['doc_id'];
   /*
   Doc cant delete a prescription
   Uncomment the code to enable
-  if(isset($_GET['delete_pres_number']))
-  {
-        $id=intval($_GET['delete_pres_number']);
-        $adn="DELETE FROM his_prescriptions WHERE pres_number=?";
-        $stmt= $mysqli->prepare($adn);
-        $stmt->bind_param('i',$id);
-        $stmt->execute();
-        $stmt->close();	 
-  
-          if($stmt)
-          {
-            $success = "Prescription Records Deleted";
-          }
-            else
-            {
-                $err = "Try Again Later";
-            }
-    }
+    $deleteResult = process_post_delete($mysqli, 'delete_pres_number', 'delete from his_prescriptions where pres_number=?', 's', [], 'Prescription deleted');
+  if ($deleteResult !== null) {
+      if (isset($deleteResult['success'])) {
+          $success = $deleteResult['success'];
+      } else {
+          $err = $deleteResult['err'];
+      }
+  }
     */
 ?>
 
@@ -126,17 +117,17 @@
 
                                                 <tbody>
                                                 <tr>
-                                                    <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->pres_pat_name;?></td>
-                                                    <td><?php echo $row->pres_pat_number;?></td>
-                                                    <td><?php echo $row->pres_pat_addr;?></td>
-                                                    <td><?php echo $row->pres_pat_ailment;?></td>
-                                                    <td><?php echo $row->pres_pat_age;?> Years</td>
-                                                    <td><?php echo $row->pres_pat_type;?></td>
+                                                    <td><?php echo escape_output($cnt); ?></td>
+                                                    <td><?php echo escape_output($row->pres_pat_name); ?></td>
+                                                    <td><?php echo escape_output($row->pres_pat_number); ?></td>
+                                                    <td><?php echo escape_output($row->pres_pat_addr); ?></td>
+                                                    <td><?php echo escape_output($row->pres_pat_ailment); ?></td>
+                                                    <td><?php echo escape_output($row->pres_pat_age); ?> Years</td>
+                                                    <td><?php echo escape_output($row->pres_pat_type); ?></td>
                                                     <td>
-                                                        <a href="his_doc_view_single_pres.php?pres_number=<?php echo $row->pres_number;?>&&pres_id=<?php echo $row->pres_id;?>" class="badge badge-success"><i class="fas fa-eye"></i> View</a>
-                                                        <a href="his_doc_upate_single_pres.php?pres_number=<?php echo $row->pres_number;?>" class="badge badge-warning"><i class="fas fa-eye-dropper "></i> Update</a>
-                                                        <!--<a href="his_admin_manage_presc.php?delete_pres_number=<?php echo $row->pres_number;?>" class="badge badge-danger"><i class=" fas fa-trash-alt "></i> Delete</a>-->
+                                                        <a href="his_doc_view_single_pres.php?pres_number=<?php echo escape_output($row->pres_number); ?>&&pres_id=<?php echo escape_output($row->pres_id); ?>" class="badge badge-success"><i class="fas fa-eye"></i> View</a>
+                                                        <a href="his_doc_upate_single_pres.php?pres_number=<?php echo escape_output($row->pres_number); ?>" class="badge badge-warning"><i class="fas fa-eye-dropper "></i> Update</a>
+                                                        <!--<?php echo render_delete_button('delete_pres_number', $row->pres_number); ?>-->
 
                                                     </td>
                                                 </tr>

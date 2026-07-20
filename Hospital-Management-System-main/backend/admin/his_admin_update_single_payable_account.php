@@ -1,7 +1,10 @@
 <!--Server side code to handle  Patient Registration-->
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['update_acc']))
 		{
 			$acc_name=$_POST['acc_name'];
@@ -59,7 +62,7 @@
                 $acc_number=$_GET['acc_number'];
                 $ret="SELECT  * FROM his_accounts WHERE acc_number=?";
                 $stmt= $mysqli->prepare($ret) ;
-                $stmt->bind_param('i',$acc_number);
+                $stmt->bind_param('s',$acc_number);
                 $stmt->execute() ;//ok
                 $res=$stmt->get_result();
                 //$cnt=1;
@@ -96,21 +99,22 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
 
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
                                                     <label for="inputEmail4" class="col-form-label">Account Name</label>
-                                                    <input type="text" required="required" value="<?php echo $row->acc_name;?>" name="acc_name" class="form-control" id="inputEmail4" >
+                                                    <input type="text" required="required" value="<?php echo escape_output($row->acc_name); ?>" name="acc_name" class="form-control" id="inputEmail4" >
                                                 </div>
                                                 <div class="form-group col-md-6">
                                                     <label for="inputEmail4" class="col-form-label">Account Amount($)</label>
-                                                    <input type="text" required="required" value="<?php echo $row->acc_amount;?>" name="acc_amount" class="form-control" id="inputEmail4" >
+                                                    <input type="text" required="required" value="<?php echo escape_output($row->acc_amount); ?>" name="acc_amount" class="form-control" id="inputEmail4" >
                                                 </div>
                                             </div>
 
                                             <div class="form-group ">
                                                     <label for="inputPassword4" class="col-form-label">Account Description</label>
-                                                    <textarea required="required" type="text" name="acc_desc" class="form-control"  id="editor"><?php echo $row->acc_desc;?></textarea>
+                                                    <textarea required="required" type="text" name="acc_desc" class="form-control"  id="editor"><?php echo escape_output($row->acc_desc); ?></textarea>
                                             </div>
 
                                             <div class="form-group" style="display:none">

@@ -1,7 +1,10 @@
 <!--Server side code to handle  Patient Discharge-->
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+  include('assets/inc/checklogin.php');
+  check_login();
 		if(isset($_POST['discharge_patient']))
 		{
             $pat_id = $_GET['pat_id'];
@@ -105,25 +108,26 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
                                                     <label for="inputEmail4" class="col-form-label">First Name</label>
-                                                    <input type="text" required="required" value="<?php echo $row->pat_fname;?>" name="pat_fname" class="form-control" id="inputEmail4" placeholder="Patient's First Name">
+                                                    <input type="text" required="required" value="<?php echo escape_output($row->pat_fname);?>" name="pat_fname" class="form-control" id="inputEmail4" placeholder="Patient's First Name">
                                                 </div>
                                                 <div class="form-group col-md-6">
                                                     <label for="inputPassword4" class="col-form-label">Last Name</label>
-                                                    <input required="required" type="text" value="<?php echo $row->pat_lname;?>" name="pat_lname" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
+                                                    <input required="required" type="text" value="<?php echo escape_output($row->pat_lname);?>" name="pat_lname" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
                                                 </div>
                                             </div>
 
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
                                                     <label for="inputEmail4" class="col-form-label">Date Of Birth</label>
-                                                    <input type="text" required="required" value="<?php echo $row->pat_dob;?>" name="pat_dob" class="form-control" id="inputEmail4" placeholder="DD/MM/YYYY">
+                                                    <input type="text" required="required" value="<?php echo escape_output($row->pat_dob);?>" name="pat_dob" class="form-control" id="inputEmail4" placeholder="DD/MM/YYYY">
                                                 </div>
                                                 <div class="form-group col-md-6">
                                                     <label for="inputPassword4" class="col-form-label">Age</label>
-                                                    <input required="required" type="text" value="<?php echo $row->pat_age;?>" name="pat_age" class="form-control"  id="inputPassword4" placeholder="Patient`s Age">
+                                                    <input required="required" type="text" value="<?php echo escape_output($row->pat_age);?>" name="pat_age" class="form-control"  id="inputPassword4" placeholder="Patient`s Age">
                                                 </div>
                                             </div>
 
@@ -131,12 +135,12 @@
 
                                                 <div class="form-group col-md-6">
                                                     <label for="inputCity" class="col-form-label">Mobile Number</label>
-                                                    <input required="required" type="text" value="<?php echo $row->pat_phone;?>" name="pat_phone" class="form-control" id="inputCity">
+                                                    <input required="required" type="text" value="<?php echo escape_output($row->pat_phone);?>" name="pat_phone" class="form-control" id="inputCity">
                                                 </div>
 
                                                 <div class="form-group col-md-6">
                                                     <label for="inputCity" class="col-form-label">Address</label>
-                                                    <input required="required" type="text" value="<?php echo $row->pat_addr;?>" name="pat_phone" class="form-control" id="inputCity">
+                                                    <input required="required" type="text" value="<?php echo escape_output($row->pat_addr);?>" name="pat_phone" class="form-control" id="inputCity">
                                                 </div>
 
                                                 <div class="form-group col-md-6" style="display:none">

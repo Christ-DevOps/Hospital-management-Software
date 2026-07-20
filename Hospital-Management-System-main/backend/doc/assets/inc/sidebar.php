@@ -7,19 +7,21 @@
 
                         <ul class="metismenu" id="side-menu">
 
-                            <li class="menu-title">Navigation</li>
+                            <li class="menu-title">Main Menu</li>
 
                             <li>
                                 <a href="his_doc_dashboard.php">
-                                    <i class="fe-airplay"></i>
+                                    <i class="mdi mdi-view-dashboard-outline"></i>
                                     <span> Dashboard </span>
                                 </a>
                                 
                             </li>
 
+                            <li class="menu-title">Clinic</li>
+
                             <li>
                                 <a href="javascript: void(0);">
-                                    <i class="fab fa-accessible-icon "></i>
+                                    <i class="mdi mdi-hospital-box-outline"></i>
                                     <span> Patients </span>
                                     <span class="menu-arrow"></span>
                                 </a>
@@ -43,7 +45,12 @@
                                 </ul>
                             </li>
 
-                          
+                            <li>
+                                <a href="his_doc_appointments.php">
+                                    <i class="mdi mdi-calendar-month-outline"></i>
+                                    <span> Appointments </span>
+                                </a>
+                            </li>
 
                             <li>
                                 <a href="javascript: void(0);">
@@ -85,9 +92,11 @@
                             </li>
 
                             
+                            <li class="menu-title">Inventory</li>
+
                             <li>
                                 <a href="javascript: void(0);">
-                                    <i class=" fas fa-funnel-dollar "></i>
+                                    <i class="mdi mdi-package-variant-closed"></i>
                                     <span> Inventory </span>
                                     <span class="menu-arrow"></span>
                                 </a>
@@ -104,6 +113,8 @@
                                 </ul>
                             </li>
                 
+                            <li class="menu-title">Laboratory</li>
+
                             <li>
                                 <a href="javascript: void(0);">
                                     <i class="mdi mdi-flask"></i>
@@ -129,9 +140,11 @@
                                 </ul>
                             </li>
 
+                            <li class="menu-title">HRM</li>
+
                             <li>
                                 <a href="javascript: void(0);">
-                                    <i class="mdi mdi-cash-refund "></i>
+                                    <i class="mdi mdi-cash-refund"></i>
                                     <span> Payrolls </span>
                                     <span class="menu-arrow"></span>
                                 </a>

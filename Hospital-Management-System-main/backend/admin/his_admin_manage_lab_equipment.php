@@ -1,27 +1,18 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
-  if(isset($_GET['delete_eqp']))
-  {
-        $id=intval($_GET['delete_eqp']);
-        $adn="delete from his_equipments where eqp_code=?";
-        $stmt= $mysqli->prepare($adn);
-        $stmt->bind_param('i',$id);
-        $stmt->execute();
-        $stmt->close();	 
-  
-          if($stmt)
-          {
-            $success = "Equipment Deleted";
-          }
-            else
-            {
-                $err = "Try Again Later";
-            }
-    }
+    $deleteResult = process_post_delete($mysqli, 'delete_eqp', 'delete from his_equipments where eqp_code=?', 's', [], 'Equipment deleted');
+  if ($deleteResult !== null) {
+      if (isset($deleteResult['success'])) {
+          $success = $deleteResult['success'];
+      } else {
+          $err = $deleteResult['err'];
+      }
+  }
 ?>
 
 <!DOCTYPE html>
@@ -121,15 +112,15 @@
                                                 <tbody>
                                                 <tr>
                                                     <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->eqp_name;?></td>
-                                                    <td><?php echo $row->eqp_vendor;?></td>
-                                                    <td><?php echo $row->eqp_code;?></td>
-                                                    <td><?php echo $row->eqp_status;?></td>
-                                                    <td><?php echo $row->eqp_qty;?></td>
+                                                    <td><?php echo escape_output($row->eqp_name);?></td>
+                                                    <td><?php echo escape_output($row->eqp_vendor);?></td>
+                                                    <td><?php echo escape_output($row->eqp_code);?></td>
+                                                    <td><?php echo escape_output($row->eqp_status);?></td>
+                                                    <td><?php echo escape_output($row->eqp_qty);?></td>
                                                     <td>
-                                                        <a href="his_admin_view_single_eqp.php?eqp_code=<?php echo $row->eqp_code;?>" class="badge badge-success"><i class="far fa-eye "></i> View</a>
-                                                        <a href="his_admin_update_single_eqp.php?eqp_code=<?php echo $row->eqp_code;?>" class="badge badge-warning"><i class="fas fa-clipboard-check "></i> Update</a>
-                                                        <a href="his_admin_manage_lab_equipment.php?delete_eqp=<?php echo $row->eqp_code;?>" class="badge badge-danger"><i class="fas fa-trash-alt "></i> Delete</a>
+                                                        <a href="his_admin_view_single_eqp.php?eqp_code=<?php echo escape_output($row->eqp_code);?>" class="badge badge-success"><i class="far fa-eye "></i> View</a>
+                                                        <a href="his_admin_update_single_eqp.php?eqp_code=<?php echo escape_output($row->eqp_code);?>" class="badge badge-warning"><i class="fas fa-clipboard-check "></i> Update</a>
+                                                        <a href="his_admin_manage_lab_equipment.php?delete_eqp=<?php echo escape_output($row->eqp_code);?>" class="badge badge-danger"><i class="fas fa-trash-alt "></i> Delete</a>
 
 
                                                     </td>

@@ -1,7 +1,10 @@
 
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
         if(isset($_POST['add_equipments']))
         
         {
@@ -89,6 +92,7 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="form-row">
                                                 <div class="form-group col-md-4">
                                                     <label for="inputEmail4" class="col-form-label">Equipment Name</label>
@@ -119,7 +123,7 @@
                                                         $length = 10;    
                                                         $bcode =  substr(str_shuffle('0123456789'),1,$length);
                                                     ?>
-                                                    <input required="required" readonly type="text" value="<?php echo $bcode;?>" name="eqp_code" class="form-control"  id="inputPassword4">
+                                                    <input required="required" readonly type="text" value="<?php echo escape_output($bcode); ?>" name="eqp_code" class="form-control"  id="inputPassword4">
                                             </div>
 
                                             <div class="form-group" style="style:display-none">

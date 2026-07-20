@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
@@ -31,7 +32,7 @@
                 $pres_id = $_GET['pres_id'];
                 $ret="SELECT  * FROM his_prescriptions WHERE pres_number = ? AND pres_id = ?";
                 $stmt= $mysqli->prepare($ret) ;
-                $stmt->bind_param('ii',$pres_number,$pres_id);
+                $stmt->bind_param('si',$pres_number,$pres_id);
                 //$stmt->bind_param('i',$pres_id);
                 $stmt->execute() ;//ok
                 $res=$stmt->get_result();
@@ -57,7 +58,7 @@
                                                 <li class="breadcrumb-item active">View Prescriptions</li>
                                             </ol>
                                         </div>
-                                        <h4 class="page-title">#<?php echo $row->pres_number;?></h4>
+                                        <h4 class="page-title">#<?php echo escape_output($row->pres_number); ?></h4>
                                     </div>
                                 </div>
                             </div>     
@@ -79,24 +80,25 @@
                                             </div> <!-- end col -->
                                             <div class="col-xl-7">
                                                 <div class="pl-xl-3 mt-3 mt-xl-0">
-                                                    <h2 class="mb-3">Name : <?php echo $row->pres_pat_name;?></h2>
+                                                    <h2 class="mb-3">Name : <?php echo escape_output($row->pres_pat_name); ?></h2>
                                                     <hr>
-                                                    <h3 class="text-danger">Age : <?php echo $row->pres_pat_age;?> Years</h3>
+                                                    <h3 class="text-danger">Age : <?php echo escape_output($row->pres_pat_age); ?> Years</h3>
                                                     <hr>
-                                                    <h3 class="text-danger ">Patient Number : <?php echo $row->pres_pat_number;?></h3>
+                                                    <h3 class="text-danger ">Patient Number : <?php echo escape_output($row->pres_pat_number); ?></h3>
                                                     <hr>
-                                                    <h3 class="text-danger ">Patient Category : <?php echo $row->pres_pat_type;?></h3>
+                                                    <h3 class="text-danger ">Patient Category : <?php echo escape_output($row->pres_pat_type); ?></h3>
                                                     <hr>
-                                                    <h3 class="text-danger ">Patient Ailment : <?php echo $row->pres_pat_ailment;?></h3>
+                                                    <h3 class="text-danger ">Patient Ailment : <?php echo escape_output($row->pres_pat_ailment); ?></h3>
                                                     <hr>
                                                     <h2 class="align-centre">Prescription</h2>
                                                     <hr>
                                                     <p class="text-muted mb-4">
-                                                        <?php echo $row->pres_ins;?>
+                                                        <?php echo escape_output($row->pres_ins); ?>
                                                     </p>
                                                     <hr>
                                                    <!--
                                                     <form class="form-inline mb-4">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                         <label class="my-1 mr-2" for="quantityinput">Quantity</label>
                                                         <select class="custom-select my-1 mr-sm-3" id="quantityinput">
                                                             <option value="1">1</option>

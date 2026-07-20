@@ -1,28 +1,19 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
   /*
-  if(isset($_GET['delete']))
-  {
-        $id=intval($_GET['delete']);
-        $adn="delete from his_docs where doc_id=?";
-        $stmt= $mysqli->prepare($adn);
-        $stmt->bind_param('i',$id);
-        $stmt->execute();
-        $stmt->close();	 
-  
-          if($stmt)
-          {
-            $success = "Employee Fired";
-          }
-            else
-            {
-                $err = "Try Again Later";
-            }
-    }
+    $deleteResult = process_post_delete($mysqli, 'delete', 'delete from his_patient_transfers where tr_id=?', 'i', [], 'Transfer record deleted');
+  if ($deleteResult !== null) {
+      if (isset($deleteResult['success'])) {
+          $success = $deleteResult['success'];
+      } else {
+          $err = $deleteResult['err'];
+      }
+  }
     */
 ?>
 
@@ -122,14 +113,14 @@
 
                                                 <tbody>
                                                 <tr>
-                                                    <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->doc_fname;?> <?php echo $row->doc_lname;?></td>
-                                                    <td><?php echo $row->doc_number;?></td>
-                                                    <td><?php echo $row->doc_dept;?></td>
-                                                    <td><?php echo $row->doc_email;?></td>
+                                                    <td><?php echo escape_output($cnt); ?></td>
+                                                    <td><?php echo escape_output($row->doc_fname); ?> <?php echo escape_output($row->doc_lname); ?></td>
+                                                    <td><?php echo escape_output($row->doc_number); ?></td>
+                                                    <td><?php echo escape_output($row->doc_dept); ?></td>
+                                                    <td><?php echo escape_output($row->doc_email); ?></td>
                                                     
                                                     <td>
-                                                        <a href="his_admin_transfer_single_employee.php?doc_number=<?php echo $row->doc_number;?>" class="badge badge-warning"><i class="mdi mdi-check-box-outline "></i> Transfer Employee</a>
+                                                        <a href="his_admin_transfer_single_employee.php?doc_number=<?php echo escape_output($row->doc_number); ?>" class="badge badge-warning"><i class="mdi mdi-check-box-outline "></i> Transfer Employee</a>
                                                     </td>
                                                 </tr>
                                                 </tbody>

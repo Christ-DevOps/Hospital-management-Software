@@ -1,13 +1,9 @@
 <?php
 function check_login()
 {
-if(strlen($_SESSION['doc_id'])==0)
-	{
-		$host = $_SERVER['HTTP_HOST'];
-		$uri  = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-		$extra="index.php";
-		$_SESSION["doc_id"]="";
-		header("Location: http://$host$uri/$extra");
-	}
+    if (empty($_SESSION['doc_id'])) {
+        $_SESSION['doc_id'] = '';
+        $_SESSION['doc_number'] = '';
+        secure_redirect('index.php');
+    }
 }
-?>

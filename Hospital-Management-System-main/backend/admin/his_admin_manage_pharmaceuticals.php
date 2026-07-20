@@ -1,27 +1,18 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
-  if(isset($_GET['delete_pharm_name']))
-  {
-        $id=intval($_GET['delete_pharm_name']);
-        $adn="delete from his_pharmaceuticals where phar_id=?";
-        $stmt= $mysqli->prepare($adn);
-        $stmt->bind_param('i',$id);
-        $stmt->execute();
-        $stmt->close();	 
-  
-          if($stmt)
-          {
-            $success = "Pharmaceutical Records Deleted";
-          }
-            else
-            {
-                $err = "Try Again Later";
-            }
-    }
+    $deleteResult = process_post_delete($mysqli, 'delete_pharm_name', 'delete from his_pharmaceuticals where phar_name=?', 's', [], 'Pharmaceutical deleted');
+  if ($deleteResult !== null) {
+      if (isset($deleteResult['success'])) {
+          $success = $deleteResult['success'];
+      } else {
+          $err = $deleteResult['err'];
+      }
+  }
 ?>
 
 <!DOCTYPE html>
@@ -120,16 +111,16 @@
 
                                                 <tbody>
                                                 <tr>
-                                                    <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->phar_name;?></td>
-                                                    <td><?php echo $row->phar_bcode;?></td>
-                                                    <td><?php echo $row->phar_vendor;?></td>
-                                                    <td><?php echo $row->phar_cat;?></td>
-                                                    <td><?php echo $row->phar_qty;?> Cartons</td>
+                                                    <td><?php echo escape_output($cnt); ?></td>
+                                                    <td><?php echo escape_output($row->phar_name); ?></td>
+                                                    <td><?php echo escape_output($row->phar_bcode); ?></td>
+                                                    <td><?php echo escape_output($row->phar_vendor); ?></td>
+                                                    <td><?php echo escape_output($row->phar_cat); ?></td>
+                                                    <td><?php echo escape_output($row->phar_qty); ?> Cartons</td>
                                                     <td>
-                                                        <a href="his_admin_view_single_pharm.php?phar_bcode=<?php echo $row->phar_bcode;?>" class="badge badge-success"><i class="far fa-eye "></i> View</a>
-                                                        <a href="his_admin_update_single_pharm.php?phar_bcode=<?php echo $row->phar_bcode;?>" class="badge badge-warning"><i class="fas fa-clipboard-check "></i> Update</a>
-                                                        <a href="his_admin_manage_pharmaceuticals.php?delete_pharm_name=<?php echo $row->phar_id;?>" class="badge badge-danger"><i class="fas fa-trash-alt"></i> Delete</a>
+                                                        <a href="his_admin_view_single_pharm.php?phar_bcode=<?php echo escape_output($row->phar_bcode); ?>" class="badge badge-success"><i class="far fa-eye "></i> View</a>
+                                                        <a href="his_admin_update_single_pharm.php?phar_bcode=<?php echo escape_output($row->phar_bcode); ?>" class="badge badge-warning"><i class="fas fa-clipboard-check "></i> Update</a>
+                                                        <?php echo render_delete_button('delete_pharm_name', $row->phar_id); ?>
 
                                                     </td>
                                                 </tr>

@@ -1,7 +1,10 @@
 
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
         if(isset($_POST['update_equipments']))
         
         {
@@ -62,7 +65,7 @@
                 $eqp_code=$_GET['eqp_code'];
                 $ret="SELECT  * FROM his_equipments WHERE eqp_code=?";
                 $stmt= $mysqli->prepare($ret) ;
-                $stmt->bind_param('i',$eqp_code);
+                $stmt->bind_param('s',$eqp_code);
                 $stmt->execute() ;//ok
                 $res=$stmt->get_result();
                 //$cnt=1;
@@ -99,18 +102,19 @@
                                             <h4 class="header-title">Fill all fields</h4>
                                             <!--Add Patient Form-->
                                             <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                 <div class="form-row">
                                                     <div class="form-group col-md-4">
                                                         <label for="inputEmail4" class="col-form-label">Equipment Name</label>
-                                                        <input type="text" required="required" value="<?php echo $row->eqp_name;?>" name="eqp_name" class="form-control" id="inputEmail4" >
+                                                        <input type="text" required="required" value="<?php echo escape_output($row->eqp_name); ?>" name="eqp_name" class="form-control" id="inputEmail4" >
                                                     </div>
                                                     <div class="form-group col-md-4">
                                                         <label for="inputPassword4" class="col-form-label">Equipment Vendor</label>
-                                                        <input required="required" type="text" value="<?php echo $row->eqp_vendor;?>" name="eqp_vendor" class="form-control"  id="inputPassword4">
+                                                        <input required="required" type="text" value="<?php echo escape_output($row->eqp_vendor); ?>" name="eqp_vendor" class="form-control"  id="inputPassword4">
                                                     </div>
                                                     <div class="form-group col-md-4">
                                                         <label for="inputPassword4" class="col-form-label">Equipment Quantity </label>
-                                                        <input required="required" type="text" value = "<?php echo $row->eqp_qty;?>" name="eqp_qty" class="form-control"  id="inputPassword4">
+                                                        <input required="required" type="text" value = "<?php echo escape_output($row->eqp_qty); ?>" name="eqp_qty" class="form-control"  id="inputPassword4">
                                                     </div>
                                                     <div class="form-group col-md-4" style="display:none">
                                                         <label for="inputPassword4" class="col-form-label">Equipment Department</label>
@@ -125,12 +129,12 @@
 
                                                 <div class="form-group " >
                                                         <label for="inputPassword4" class="col-form-label">Equipment Status</label>
-                                                        <input required="required" type="text" value="<?php echo $row->eqp_status;?>" name="eqp_status" class="form-control"  id="inputPassword4">
+                                                        <input required="required" type="text" value="<?php echo escape_output($row->eqp_status); ?>" name="eqp_status" class="form-control"  id="inputPassword4">
                                                 </div>
 
                                                 <div class="form-group" style="style:display-none">
                                                     <label for="inputAddress" class="col-form-label">Pharmaceutical Category Description</label>
-                                                    <textarea required="required" type="text" class="form-control" name="eqp_desc" id="editor"><?php echo $row->eqp_desc;?></textarea>
+                                                    <textarea required="required" type="text" class="form-control" name="eqp_desc" id="editor"><?php echo escape_output($row->eqp_desc); ?></textarea>
                                                 </div>
 
                                             <button type="submit" name="update_equipments" class="ladda-button btn btn-success" data-style="expand-right">Update Equipment</button>

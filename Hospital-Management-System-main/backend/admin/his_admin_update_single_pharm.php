@@ -1,7 +1,10 @@
 
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['update_pharmaceutical']))
 		{
 			$phar_name = $_POST['phar_name'];
@@ -83,7 +86,7 @@
                                                 <li class="breadcrumb-item active">Manage Pharmaceutical</li>
                                             </ol>
                                         </div>
-                                        <h4 class="page-title">Update #<?php echo $row->phar_bcode;?> - <?php echo $row->phar_name;?></h4>
+                                        <h4 class="page-title">Update #<?php echo escape_output($row->phar_bcode); ?> - <?php echo escape_output($row->phar_name); ?></h4>
                                     </div>
                                 </div>
                             </div>     
@@ -96,24 +99,25 @@
                                             <h4 class="header-title">Fill all fields</h4>
                                             <!--Add Patient Form-->
                                             <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                 <div class="form-row">
                                                     <div class="form-group col-md-6">
                                                         <label for="inputEmail4" class="col-form-label">Pharmaceutical Name</label>
-                                                        <input type="text" required="required" value="<?php echo $row->phar_name;?>" name="phar_name" class="form-control" id="inputEmail4" >
+                                                        <input type="text" required="required" value="<?php echo escape_output($row->phar_name); ?>" name="phar_name" class="form-control" id="inputEmail4" >
                                                     </div>
                                                     <div class="form-group col-md-6">
                                                         <label for="inputPassword4" class="col-form-label">Pharmaceutical Quantity(Cartons)</label>
-                                                        <input required="required" type="text" value="<?php echo $row->phar_qty;?>" name="phar_qty" class="form-control"  id="inputPassword4">
+                                                        <input required="required" type="text" value="<?php echo escape_output($row->phar_qty); ?>" name="phar_qty" class="form-control"  id="inputPassword4">
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="inputAddress" class="col-form-label">Pharmaceutical Description</label>
-                                                    <textarea required="required"  type="text" class="form-control" name="phar_desc" id="editor"><?php echo $row->phar_desc;?></textarea>
+                                                    <textarea required="required"  type="text" class="form-control" name="phar_desc" id="editor"><?php echo escape_output($row->phar_desc); ?></textarea>
                                                 </div>
                                                 <div class="form-row">
                                                 <div class="form-group col-md-6">
                                                         <label for="inputPassword4" class="col-form-label">Pharmaceutical Vendor</label>
-                                                        <input required="required" type="text" value="<?php echo $row->phar_vendor;?>" name="phar_vendor" class="form-control"  id="inputPassword4">
+                                                        <input required="required" type="text" value="<?php echo escape_output($row->phar_vendor); ?>" name="phar_vendor" class="form-control"  id="inputPassword4">
                                                 </div>
                                                 
 
@@ -131,7 +135,7 @@
                                                             while($row=$res->fetch_object())
                                                             {
                                                         ?>
-                                                            <option><?php echo $row->pharm_cat_name;?></option>
+                                                            <option><?php echo escape_output($row->pharm_cat_name); ?></option>
                                                         <?php }?>    
                                                         </select>
                                                     </div>

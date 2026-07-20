@@ -17,8 +17,11 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `hmisphp`
+-- Database: `hospital-management`
 --
+
+CREATE DATABASE IF NOT EXISTS `hospital-management` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `hospital-management`;
 
 -- --------------------------------------------------------
 
@@ -65,7 +68,7 @@ CREATE TABLE `his_admin` (
 --
 
 INSERT INTO `his_admin` (`ad_id`, `ad_fname`, `ad_lname`, `ad_email`, `ad_pwd`, `ad_dpic`) VALUES
-(1, 'System', 'Administrator', 'admin@mail.com', '4c7f5919e957f354d57243d37f223cf31e9e7181', 'doc-icon.png');
+(1, 'System', 'Administrator', 'admin@mail.com', '$2y$12$H5bYaXZR3K0LlGtVlPzrEOb/bO736CaTHcey/KCO2qYr7ks7fHbmS', 'doc-icon.png');
 
 -- --------------------------------------------------------
 
@@ -104,9 +107,9 @@ CREATE TABLE `his_docs` (
 --
 
 INSERT INTO `his_docs` (`doc_id`, `doc_fname`, `doc_lname`, `doc_email`, `doc_pwd`, `doc_dept`, `doc_number`, `doc_dpic`) VALUES
-(5, 'Aletha', 'White', 'aletha@mail.com', 'dce0b27ba675df41e9cc07af80ec59c475810824', 'Laboratory', 'BKTWQ', 'defaultimg.jpg'),
-(6, 'Bryan', 'Arreola', 'bryan@mail.com', '55c3b5386c486feb662a0785f340938f518d547f', 'Surgery | Theatre', 'YDS7L', 'user-default-2-min.png'),
-(12, 'Jessica', 'Spencer', 'jessica@mail.com', 'dce0b27ba675df41e9cc07af80ec59c475810824', 'Accounting', '5VIFT', 'usric.png');
+(5, 'Aletha', 'White', 'aletha@mail.com', '$2y$12$xKfZPdS13D5.b5n..dp56e3zZM7WrxmvF4VamKdS/uG4ONjJynsEy', 'Laboratory', 'BKTWQ', 'defaultimg.jpg'),
+(6, 'Bryan', 'Arreola', 'bryan@mail.com', '$2y$12$xKfZPdS13D5.b5n..dp56e3zZM7WrxmvF4VamKdS/uG4ONjJynsEy', 'Surgery | Theatre', 'YDS7L', 'user-default-2-min.png'),
+(12, 'Jessica', 'Spencer', 'jessica@mail.com', '$2y$12$xKfZPdS13D5.b5n..dp56e3zZM7WrxmvF4VamKdS/uG4ONjJynsEy', 'Accounting', '5VIFT', 'usric.png');
 
 -- --------------------------------------------------------
 
@@ -199,11 +202,22 @@ CREATE TABLE `his_patients` (
   `pat_id` int(20) NOT NULL,
   `pat_fname` varchar(200) DEFAULT NULL,
   `pat_lname` varchar(200) DEFAULT NULL,
+  `pat_sex` varchar(20) DEFAULT NULL,
+  `pat_marital_status` varchar(40) DEFAULT NULL,
+  `pat_religion` varchar(80) DEFAULT NULL,
+  `pat_reg_hour` time DEFAULT NULL,
   `pat_dob` varchar(200) DEFAULT NULL,
   `pat_age` varchar(200) DEFAULT NULL,
   `pat_number` varchar(200) DEFAULT NULL,
   `pat_addr` varchar(200) DEFAULT NULL,
+  `pat_village` varchar(200) DEFAULT NULL,
+  `pat_division` varchar(200) DEFAULT NULL,
+  `pat_subdivision` varchar(200) DEFAULT NULL,
+  `pat_blood_group` varchar(10) DEFAULT NULL,
   `pat_phone` varchar(200) DEFAULT NULL,
+  `pat_email` varchar(200) DEFAULT NULL,
+  `pat_emergency_name` varchar(200) DEFAULT NULL,
+  `pat_emergency_phone` varchar(40) DEFAULT NULL,
   `pat_type` varchar(200) DEFAULT NULL,
   `pat_date_joined` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   `pat_ailment` varchar(200) DEFAULT NULL,
@@ -220,6 +234,26 @@ INSERT INTO `his_patients` (`pat_id`, `pat_fname`, `pat_lname`, `pat_dob`, `pat_
 (10, 'Cynthia', 'Connolly', '10/11/2000', '22', '3Z14K', '9 Hill Haven Drive', '1478885458', 'InPatient', '2022-10-18 16:54:53.104490', 'Demo Test', NULL),
 (11, 'Helen', 'Macdougall', '01/01/1980', '42', 'KU8W4', '28 Holly Street', '1458889655', 'OutPatient', '2022-10-20 17:26:45.256878', 'Test Test', NULL),
 (12, 'Christine', 'Moore', '11/06/1994', '28', '4TLG0', '117 Bleecker Street', '7412569698', 'InPatient', '2022-10-22 10:38:30.937516', 'Demo Test', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `his_appointments`
+-- Stage A: pat_id/doc_id stored without strict FK enforcement (legacy mirror style).
+--
+
+CREATE TABLE `his_appointments` (
+  `appt_id` int(20) NOT NULL,
+  `pat_id` int(20) DEFAULT NULL,
+  `pat_number` varchar(200) DEFAULT NULL,
+  `doc_id` int(20) DEFAULT NULL,
+  `doc_number` varchar(200) DEFAULT NULL,
+  `appt_datetime` datetime NOT NULL,
+  `appt_status` varchar(40) NOT NULL DEFAULT 'booked',
+  `appt_reason` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -354,8 +388,11 @@ INSERT INTO `his_prescriptions` (`pres_id`, `pres_pat_name`, `pres_pat_age`, `pr
 
 CREATE TABLE `his_pwdresets` (
   `id` int(20) NOT NULL,
-  `email` varchar(200) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `email` varchar(200) NOT NULL,
+  `token` varchar(255) DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'Pending',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -491,6 +528,16 @@ ALTER TABLE `his_patients`
   ADD PRIMARY KEY (`pat_id`);
 
 --
+-- Indexes for table `his_appointments`
+--
+ALTER TABLE `his_appointments`
+  ADD PRIMARY KEY (`appt_id`),
+  ADD KEY `idx_appt_datetime` (`appt_datetime`),
+  ADD KEY `idx_appt_doc` (`doc_id`),
+  ADD KEY `idx_appt_pat` (`pat_id`),
+  ADD KEY `idx_appt_status` (`appt_status`);
+
+--
 -- Indexes for table `his_patient_transfers`
 --
 ALTER TABLE `his_patient_transfers`
@@ -588,6 +635,11 @@ ALTER TABLE `his_medical_records`
 --
 ALTER TABLE `his_patients`
   MODIFY `pat_id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+--
+-- AUTO_INCREMENT for table `his_appointments`
+--
+ALTER TABLE `his_appointments`
+  MODIFY `appt_id` int(20) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `his_patient_transfers`
 --

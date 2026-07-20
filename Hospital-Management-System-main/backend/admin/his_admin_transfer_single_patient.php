@@ -1,7 +1,10 @@
 <!--Server side code to handle  Patient Transfer-->
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['transfer_patient']))
 		{
             $t_pat_number = $_POST['t_pat_number'];
@@ -84,7 +87,7 @@
                             $pat_number=$_GET['pat_number'];
                             $ret="SELECT  * FROM his_patients WHERE pat_number=?";
                             $stmt= $mysqli->prepare($ret) ;
-                            $stmt->bind_param('i',$pat_number);
+                            $stmt->bind_param('s',$pat_number);
                             $stmt->execute() ;//ok
                             $res=$stmt->get_result();
                             //$cnt=1;
@@ -98,10 +101,11 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="form-row">
                                                 <div class="form-group col-md-12">
                                                     <label for="inputEmail4" class="col-form-label">Patient Name</label>
-                                                    <input type="text" required="required" value="<?php echo $row->pat_fname;?> <?php echo $row->pat_lname;?>" name="t_pat_name" class="form-control" id="inputEmail4" placeholder="Patient's First Name">
+                                                    <input type="text" required="required" value="<?php echo escape_output($row->pat_fname); ?> <?php echo escape_output($row->pat_lname); ?>" name="t_pat_name" class="form-control" id="inputEmail4" placeholder="Patient's First Name">
                                                 </div>
                                                 
                                             </div>
@@ -117,7 +121,7 @@
                                                 </div>
                                                 <div class="form-group col-md-6" style="display:none">
                                                     <label for="inputPassword4" class="col-form-label">Patient Number </label>
-                                                    <input required="required" type="text"  name="t_pat_number" value="<?php echo $row->pat_number;?>" class="form-control"  id="inputPassword4" placeholder="">
+                                                    <input required="required" type="text"  name="t_pat_number" value="<?php echo escape_output($row->pat_number); ?>" class="form-control"  id="inputPassword4" placeholder="">
                                                 </div>
                                             </div>
 

@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
@@ -30,7 +31,7 @@
                 $acc_number=$_GET['acc_number'];
                 $ret="SELECT  * FROM his_accounts WHERE acc_number = ?";
                 $stmt= $mysqli->prepare($ret) ;
-                $stmt->bind_param('i',$acc_number);
+                $stmt->bind_param('s',$acc_number);
                 $stmt->execute() ;//ok
                 $res=$stmt->get_result();
                 //$cnt=1;
@@ -77,19 +78,20 @@
                                             </div> <!-- end col -->
                                             <div class="col-xl-7">
                                                 <div class="pl-xl-3 mt-3 mt-xl-0">
-                                                    <h2 class="mb-3">Account Number :  <?php echo $row->acc_number;?></h2>
+                                                    <h2 class="mb-3">Account Number :  <?php echo escape_output($row->acc_number); ?></h2>
                                                     <hr>
-                                                    <h4 class="text-danger"> Account Name : <?php echo $row->acc_name;?></h6>
+                                                    <h4 class="text-danger"> Account Name : <?php echo escape_output($row->acc_name); ?></h6>
                                                     <hr>
-                                                    <h4 class="text-danger">Account Amount : $ <?php echo $row->acc_amount;?> </h6>
+                                                    <h4 class="text-danger">Account Amount : $ <?php echo escape_output($row->acc_amount); ?> </h6>
                                                     <hr>
                                                     <h4 class="align-centre">Account Description</h6>
                                                     <hr>
                                                     <p class="text-muted mb-4">
-                                                        <?php echo $row->acc_desc;?>
+                                                        <?php echo escape_output($row->acc_desc); ?>
                                                     </p>
                                                    <!--
                                                     <form class="form-inline mb-4">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                         <label class="my-1 mr-2" for="quantityinput">Quantity</label>
                                                         <select class="custom-select my-1 mr-sm-3" id="quantityinput">
                                                             <option value="1">1</option>

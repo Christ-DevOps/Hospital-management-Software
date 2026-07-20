@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $doc_id = $_SESSION['doc_id'];
@@ -57,7 +58,7 @@
                                                 <li class="breadcrumb-item active">View  Records</li>
                                             </ol>
                                         </div>
-                                        <h4 class="page-title">#<?php echo $row->lab_number;?></h4>
+                                        <h4 class="page-title">#<?php echo escape_output($row->lab_number); ?></h4>
                                     </div>
                                 </div>
                             </div>     
@@ -79,27 +80,28 @@
                                             </div> <!-- end col -->
                                             <div class="col-xl-7">
                                                 <div class="pl-xl-3 mt-3 mt-xl-0">
-                                                    <h2 class="mb-3">Patient's Name : <?php echo $row->lab_pat_name;?></h2>
+                                                    <h2 class="mb-3">Patient's Name : <?php echo escape_output($row->lab_pat_name); ?></h2>
                                                     <hr>
-                                                    <h3 class="text-danger ">Patient Number : <?php echo $row->lab_pat_number;?></h3>
+                                                    <h3 class="text-danger ">Patient Number : <?php echo escape_output($row->lab_pat_number); ?></h3>
                                                     <hr>
-                                                    <h3 class="text-danger ">Patient Ailment : <?php echo $row->lab_pat_ailment;?></h3>
+                                                    <h3 class="text-danger ">Patient Ailment : <?php echo escape_output($row->lab_pat_ailment); ?></h3>
                                                     <hr>
                                                     <h3 class="text-danger ">Date Recorded : <?php echo date("d/m/Y - h:m:s", strtotime($mysqlDateTime));?></h3>
                                                     <hr>
                                                     <h2 class="align-centre">Laboratory Test</h2>
                                                     <hr>
                                                     <p class="text-muted mb-4">
-                                                        <?php echo $row->lab_pat_tests;?>
+                                                        <?php echo escape_output($row->lab_pat_tests); ?>
                                                     </p>
                                                     <hr>
                                                     <h2 class="align-centre">Laboratory Result</h2>
                                                     <p class="text-muted mb-4">
-                                                        <?php echo $row->lab_pat_results;?>
+                                                        <?php echo escape_output($row->lab_pat_results); ?>
                                                     </p>
                                                     <hr>
                                                    <!--
                                                     <form class="form-inline mb-4">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                         <label class="my-1 mr-2" for="quantityinput">Quantity</label>
                                                         <select class="custom-select my-1 mr-sm-3" id="quantityinput">
                                                             <option value="1">1</option>

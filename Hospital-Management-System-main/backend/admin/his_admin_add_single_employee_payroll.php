@@ -1,7 +1,10 @@
 <!--Server side code to handle  Patient Registration-->
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+  include('assets/inc/checklogin.php');
+  check_login();
 		if(isset($_POST['add_payroll']))
 		{
 			$pay_number = $_POST['pay_number'];
@@ -97,21 +100,22 @@
                                             <h4 class="header-title">Fill all fields</h4>
                                             <!--Add Patient Form-->
                                             <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                 <div class="form-row">
 
                                                     <div class="form-group col-md-4">
                                                         <label for="inputEmail4" class="col-form-label">Employee Name</label>
-                                                        <input type="text" required="required" readonly name="pay_doc_name" value="<?php echo $row->doc_fname;?> <?php echo $row->doc_lname;?>" class="form-control" id="inputEmail4" placeholder="Patient's Name">
+                                                        <input type="text" required="required" readonly name="pay_doc_name" value="<?php echo escape_output($row->doc_fname);?> <?php echo escape_output($row->doc_lname);?>" class="form-control" id="inputEmail4" placeholder="Patient's Name">
                                                     </div>
 
                                                     <div class="form-group col-md-4">
                                                         <label for="inputPassword4" class="col-form-label">Employee Email</label>
-                                                        <input required="required" type="text" readonly name="pay_doc_email" value="<?php echo $row->doc_email;?>" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
+                                                        <input required="required" type="text" readonly name="pay_doc_email" value="<?php echo escape_output($row->doc_email);?>" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
                                                     </div>
 
                                                     <div class="form-group col-md-4">
                                                         <label for="inputPassword4" class="col-form-label">Employee Number</label>
-                                                        <input required="required" type="text" readonly name="pay_doc_number" value="<?php echo $row->doc_number;?>" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
+                                                        <input required="required" type="text" readonly name="pay_doc_number" value="<?php echo escape_output($row->doc_number);?>" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
                                                     </div>
 
                                                 </div>

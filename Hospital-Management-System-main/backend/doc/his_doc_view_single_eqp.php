@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $doc_id = $_SESSION['doc_id'];
@@ -30,7 +31,7 @@
                 $eqp_code=$_GET['eqp_code'];
                 $ret="SELECT  * FROM his_equipments WHERE eqp_code = ?";
                 $stmt= $mysqli->prepare($ret) ;
-                $stmt->bind_param('i',$eqp_code);
+                $stmt->bind_param('s',$eqp_code);
                 $stmt->execute() ;//ok
                 $res=$stmt->get_result();
                 //$cnt=1;
@@ -55,7 +56,7 @@
                                                 <li class="breadcrumb-item active">Equipments | Assets</li>
                                             </ol>
                                         </div>
-                                        <h4 class="page-title">Equipment #<?php echo $row->eqp_code;?> Details</h4>
+                                        <h4 class="page-title">Equipment #<?php echo escape_output($row->eqp_code); ?> Details</h4>
                                     </div>
                                 </div>
                             </div>     
@@ -77,22 +78,23 @@
                                             </div> <!-- end col -->
                                             <div class="col-xl-7">
                                                 <div class="pl-xl-3 mt-3 mt-xl-0">
-                                                    <h2 class="mb-3">Equipment Name : <?php echo $row->eqp_name;?></h2>
+                                                    <h2 class="mb-3">Equipment Name : <?php echo escape_output($row->eqp_name); ?></h2>
                                                     <hr>
-                                                    <h4 class="text-danger">Equipment Vendor: <?php echo $row->eqp_vendor;?></h4>
+                                                    <h4 class="text-danger">Equipment Vendor: <?php echo escape_output($row->eqp_vendor); ?></h4>
                                                     <hr>
-                                                    <h4 class="text-danger">Equipment Barcode: <?php echo $row->eqp_code;?></h4>
+                                                    <h4 class="text-danger">Equipment Barcode: <?php echo escape_output($row->eqp_code); ?></h4>
                                                     <hr>
-                                                    <h4 class="text-danger">Equipment(s) Available : <?php echo $row->eqp_qty;?></h4>
+                                                    <h4 class="text-danger">Equipment(s) Available : <?php echo escape_output($row->eqp_qty); ?></h4>
                                                     <hr>
-                                                    <h4 class="text-danger">Equipment Status : <?php echo $row->eqp_status;?></h4>
+                                                    <h4 class="text-danger">Equipment Status : <?php echo escape_output($row->eqp_status); ?></h4>
                                                     <hr>
                                                     <h4 class="text-danger">Equipment Description</h4>
                                                     <p class="text-muted mb-4">
-                                                        <?php echo $row->eqp_desc;?>
+                                                        <?php echo escape_output($row->eqp_desc); ?>
                                                     </p>
                                                    <!--
                                                     <form class="form-inline mb-4">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                         <label class="my-1 mr-2" for="quantityinput">Quantity</label>
                                                         <select class="custom-select my-1 mr-sm-3" id="quantityinput">
                                                             <option value="1">1</option>

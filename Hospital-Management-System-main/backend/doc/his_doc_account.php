@@ -1,7 +1,8 @@
 
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $doc_id = $_SESSION['doc_id'];
@@ -59,7 +60,7 @@
                                             <li class="breadcrumb-item active">View My Profile</li>
                                         </ol>
                                     </div>
-                                    <h4 class="page-title"><?php echo $row->doc_fname;?> <?php echo $row->doc_lname;?>'s Profile</h4>
+                                    <h4 class="page-title"><?php echo escape_output($row->doc_fname); ?> <?php echo escape_output($row->doc_lname); ?>'s Profile</h4>
                                 </div>
                             </div>
                         </div>
@@ -68,16 +69,16 @@
                         <div class="row">
                             <div class="col-lg-6 col-xl-6">
                                 <div class="card-box text-center">
-                                    <img src="../doc/assets/images/users/<?php echo $row->doc_dpic;?>" class="rounded-circle avatar-lg img-thumbnail"
+                                    <img src="../doc/assets/images/users/<?php echo escape_output($row->doc_dpic); ?>" class="rounded-circle avatar-lg img-thumbnail"
                                         alt="profile-image">
 
                                     
                                     <div class="text-centre mt-3">
                                         
-                                        <p class="text-muted mb-2 font-13"><strong>Employee Full Name :</strong> <span class="ml-2"><?php echo $row->doc_fname;?> <?php echo $row->doc_lname;?></span></p>
-                                       <p class="text-muted mb-2 font-13"><strong>Employee Department :</strong> <span class="ml-2"><?php echo $row->doc_dept;?></span></p>
-                                        <p class="text-muted mb-2 font-13"><strong>Employee Number :</strong> <span class="ml-2"><?php echo $row->doc_number;?></span></p>
-                                        <p class="text-muted mb-2 font-13"><strong>Employee Email :</strong> <span class="ml-2"><?php echo $row->doc_email;?></span></p>
+                                        <p class="text-muted mb-2 font-13"><strong>Employee Full Name :</strong> <span class="ml-2"><?php echo escape_output($row->doc_fname); ?> <?php echo escape_output($row->doc_lname); ?></span></p>
+                                       <p class="text-muted mb-2 font-13"><strong>Employee Department :</strong> <span class="ml-2"><?php echo escape_output($row->doc_dept); ?></span></p>
+                                        <p class="text-muted mb-2 font-13"><strong>Employee Number :</strong> <span class="ml-2"><?php echo escape_output($row->doc_number); ?></span></p>
+                                        <p class="text-muted mb-2 font-13"><strong>Employee Email :</strong> <span class="ml-2"><?php echo escape_output($row->doc_email); ?></span></p>
 
 
                                     </div>
@@ -114,10 +115,10 @@
                                         ?>
                                             <tbody>
                                                 <tr>
-                                                    <td><?php echo $row->vit_bodytemp;?>°C</td>
-                                                    <td><?php echo $row->vit_heartpulse;?>BPM</td>
-                                                    <td><?php echo $row->vit_resprate;?>bpm</td>
-                                                    <td><?php echo $row->vit_bloodpress;?>mmHg</td>
+                                                    <td><?php echo escape_output($row->vit_bodytemp); ?>°C</td>
+                                                    <td><?php echo escape_output($row->vit_heartpulse); ?>BPM</td>
+                                                    <td><?php echo escape_output($row->vit_resprate); ?>bpm</td>
+                                                    <td><?php echo escape_output($row->vit_bloodpress); ?>mmHg</td>
                                                     <td><?php echo date("Y-m-d", strtotime($mysqlDateTime));?></td>
                                                 </tr>
                                             </tbody>

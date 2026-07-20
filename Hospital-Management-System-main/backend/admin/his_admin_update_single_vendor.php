@@ -1,7 +1,10 @@
 <!--Server side code to handle  Patient Registration-->
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['update_vendor']))
 		{
 			$v_name=$_POST['v_name'];
@@ -10,7 +13,7 @@
             $v_email=$_POST['v_email'];
             $v_phone = $_POST['v_phone'];
             $v_desc = $_POST['v_desc'];
-            //$doc_pwd=sha1(md5($_POST['doc_pwd']));
+            //$doc_pwd=password_hash($_POST['doc_pwd'], PASSWORD_DEFAULT);
             
             //sql to insert captured values
 			$query="UPDATE  his_vendor SET v_name=?, v_adr=?,  v_email = ?, v_phone=?, v_desc=? WHERE v_number=?";
@@ -84,7 +87,7 @@
                             $v_number=$_GET['v_number'];
                             $ret="SELECT  * FROM his_vendor WHERE v_number = ?";
                             $stmt= $mysqli->prepare($ret) ;
-                            $stmt->bind_param('i',$v_number);
+                            $stmt->bind_param('s',$v_number);
                             $stmt->execute() ;//ok
                             $res=$stmt->get_result();
                             //$cnt=1;
@@ -98,30 +101,31 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="form-row">
                                                 <div class="form-group col-md-4">
                                                     <label for="inputEmail4" class="col-form-label">Vendor Name</label>
-                                                    <input type="text" required="required" value="<?php echo $row->v_name;?>" name="v_name" class="form-control" id="inputEmail4" >
+                                                    <input type="text" required="required" value="<?php echo escape_output($row->v_name); ?>" name="v_name" class="form-control" id="inputEmail4" >
                                                 </div>
                                                 <div class="form-group col-md-4">
                                                     <label for="inputPassword4" class="col-form-label">Vendor Phone Number</label>
-                                                    <input required="required" type="text" value="<?php echo $row->v_phone;?>" name="v_phone" class="form-control"  id="inputPassword4">
+                                                    <input required="required" type="text" value="<?php echo escape_output($row->v_phone); ?>" name="v_phone" class="form-control"  id="inputPassword4">
                                                 </div>
                                                 <div class="form-group col-md-4">
                                                     <label for="inputPassword4" class="col-form-label">Vendor Address</label>
-                                                    <input required="required" value="<?php echo $row->v_adr;?>" type="text" name="v_adr" class="form-control"  id="inputPassword4">
+                                                    <input required="required" value="<?php echo escape_output($row->v_adr); ?>" type="text" name="v_adr" class="form-control"  id="inputPassword4">
                                                 </div>
                                             </div>
 
                                             
                                             <div class="form-group">
                                                 <label for="inputAddress" class="col-form-label">Vendor Email</label>
-                                                <input required="required" value="<?php echo $row->v_email;?>" type="email" class="form-control" name="v_email" id="inputAddress">
+                                                <input required="required" value="<?php echo escape_output($row->v_email); ?>" type="email" class="form-control" name="v_email" id="inputAddress">
                                             </div>
 
                                             <div class="form-group">
                                                 <label for="inputAddress" class="col-form-label">Vendor Details</label>
-                                                <textarea  type="text" class="form-control" name="v_desc" id="editor"><?php echo $row->v_desc;?></textarea>
+                                                <textarea  type="text" class="form-control" name="v_desc" id="editor"><?php echo escape_output($row->v_desc); ?></textarea>
                                             </div>
 
                                             <button type="submit" name="update_vendor" class="ladda-button btn btn-success" data-style="expand-right">Update Vendor</button>

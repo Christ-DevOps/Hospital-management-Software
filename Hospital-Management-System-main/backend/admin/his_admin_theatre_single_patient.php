@@ -1,7 +1,10 @@
 <!--Server side code to handle  Patient Registration-->
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['add_patient']))
 		{
             $s_pat_number = $_POST['s_pat_number'];
@@ -97,21 +100,22 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
                                                     <label for="inputEmail4" class="col-form-label">Patient Name</label>
-                                                    <input type="text" readonly required="required" value="<?php echo $row->pat_fname;?> <?php echo $row->pat_lname;?>" name="s_pat_name" class="form-control" id="inputEmail4" placeholder="Patient's First Name">
+                                                    <input type="text" readonly required="required" value="<?php echo escape_output($row->pat_fname); ?> <?php echo escape_output($row->pat_lname); ?>" name="s_pat_name" class="form-control" id="inputEmail4" placeholder="Patient's First Name">
                                                 </div>
                                                 <div class="form-group col-md-6">
                                                     <label for="inputPassword4" class="col-form-label">Patient Ailment</label>
-                                                    <input readonly required="required" type="text" value="<?php echo $row->pat_ailment;?>" name="s_pat_ailment" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
+                                                    <input readonly required="required" type="text" value="<?php echo escape_output($row->pat_ailment); ?>" name="s_pat_ailment" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
                                                 </div>
                                             </div>
 
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
                                                     <label for="inputEmail4" class="col-form-label">Patient Number</label>
-                                                    <input readonly type="text" required="required" value="<?php echo $row->pat_number;?>" name="s_pat_number" class="form-control" id="inputEmail4" placeholder="DD/MM/YYYY">
+                                                    <input readonly type="text" required="required" value="<?php echo escape_output($row->pat_number); ?>" name="s_pat_number" class="form-control" id="inputEmail4" placeholder="DD/MM/YYYY">
                                                 </div>
                                                 <div class="form-group col-md-6">
                                                     <label for="inputState" class="col-form-label">Surgeon</label>
@@ -127,7 +131,7 @@
                                                         while($row=$res->fetch_object())
                                                         {
                                                     ?>
-                                                        <option><?php echo $row->doc_fname;?> <?php echo $row->doc_lname;?></option>
+                                                        <option><?php echo escape_output($row->doc_fname); ?> <?php echo escape_output($row->doc_lname); ?></option>
 
                                                     <?php }?>
                                                     </select>
@@ -147,7 +151,7 @@
                                                         $s_number =  substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'),1,$length);
                                                     ?>
                                                     <label for="inputZip" class="col-form-label">Surgery Record Number</label>
-                                                    <input type="text" name="s_number" value="<?php echo $s_number;?>" class="form-control" id="inputZip">
+                                                    <input type="text" name="s_number" value="<?php echo escape_output($s_number); ?>" class="form-control" id="inputZip">
                                                 </div>
                                             </div>
 

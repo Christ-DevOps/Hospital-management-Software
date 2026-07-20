@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
@@ -102,10 +103,10 @@
                                                 <tbody>
                                                 <tr>
                                                     <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->doc_fname;?> <?php echo $row->doc_lname;?></td>
-                                                    <td><?php echo $row->doc_number;?></td>
-                                                    <td><?php echo $row->doc_email;?></td>                                                    
-                                                    <td><a href="his_admin_add_single_employee_vitals.php?doc_number=<?php echo $row->doc_number;?>" class="badge badge-success"><i class="fas fa-edit"></i> Capture Vitals</a></td>
+                                                    <td><?php echo escape_output($row->doc_fname);?> <?php echo escape_output($row->doc_lname);?></td>
+                                                    <td><?php echo escape_output($row->doc_number);?></td>
+                                                    <td><?php echo escape_output($row->doc_email);?></td>                                                    
+                                                    <td><a href="his_admin_add_single_employee_vitals.php?doc_number=<?php echo escape_output($row->doc_number);?>" class="badge badge-success"><i class="fas fa-edit"></i> Capture Vitals</a></td>
                                                 </tr>
                                                 </tbody>
                                             <?php  $cnt = $cnt +1 ; }?>

@@ -1,6 +1,9 @@
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['add_patient_vitals']))
 		{
 			$vit_number = $_POST['vit_number'];
@@ -83,7 +86,7 @@
                                                 <li class="breadcrumb-item active">Capture Vitals</li>
                                             </ol>
                                         </div>
-                                        <h4 class="page-title">Capture <?php echo $row->pat_fname;?> <?php echo $row->pat_lname;?> Vitals</h4>
+                                        <h4 class="page-title">Capture <?php echo escape_output($row->pat_fname); ?> <?php echo escape_output($row->pat_lname); ?> Vitals</h4>
                                     </div>
                                 </div>
                             </div>     
@@ -96,16 +99,17 @@
                                             <h4 class="header-title">Fill all fields</h4>
                                             <!--Add Patient Form-->
                                             <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                                 <div class="form-row">
 
                                                     <div class="form-group col-md-6">
                                                         <label for="inputEmail4" class="col-form-label">Patient Name</label>
-                                                        <input type="text" required="required" readonly name="" value="<?php echo $row->pat_fname;?> <?php echo $row->pat_lname;?>" class="form-control" id="inputEmail4" placeholder="Patient's First Name">
+                                                        <input type="text" required="required" readonly name="" value="<?php echo escape_output($row->pat_fname); ?> <?php echo escape_output($row->pat_lname); ?>" class="form-control" id="inputEmail4" placeholder="Patient's First Name">
                                                     </div>
 
                                                     <div class="form-group col-md-6">
                                                         <label for="inputPassword4" class="col-form-label">Patient Ailment</label>
-                                                        <input required="required" type="text" readonly name="" value="<?php echo $row->pat_ailment;?>" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
+                                                        <input required="required" type="text" readonly name="" value="<?php echo escape_output($row->pat_ailment); ?>" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
                                                     </div>
 
                                                 </div>
@@ -114,7 +118,7 @@
 
                                                     <div class="form-group col-md-12">
                                                         <label for="inputEmail4" class="col-form-label">Patient Number</label>
-                                                        <input type="text" required="required" readonly name="vit_pat_number" value="<?php echo $row->pat_number;?>" class="form-control" id="inputEmail4" placeholder="DD/MM/YYYY">
+                                                        <input type="text" required="required" readonly name="vit_pat_number" value="<?php echo escape_output($row->pat_number); ?>" class="form-control" id="inputEmail4" placeholder="DD/MM/YYYY">
                                                     </div>
 
 
@@ -131,7 +135,7 @@
                                                             $vit_no =  substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'),1,$length);
                                                         ?>
                                                         <label for="inputZip" class="col-form-label">Vital Number</label>
-                                                        <input type="text" name="vit_number" value="<?php echo $vit_no;?>" class="form-control" id="inputZip">
+                                                        <input type="text" name="vit_number" value="<?php echo escape_output($vit_no); ?>" class="form-control" id="inputZip">
                                                     </div>
                                                 </div>
 

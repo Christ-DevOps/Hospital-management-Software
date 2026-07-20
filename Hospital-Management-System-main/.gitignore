@@ -1,0 +1,29 @@
+# Environment and secrets
+backend/.env
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Uploads (user-generated content)
+backend/admin/assets/images/users/*
+!backend/admin/assets/images/users/.gitkeep
+backend/doc/assets/images/users/*
+!backend/doc/assets/images/users/.gitkeep
+
+# PHP
+vendor/

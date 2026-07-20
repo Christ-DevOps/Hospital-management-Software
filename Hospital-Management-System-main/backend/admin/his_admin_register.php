@@ -1,13 +1,16 @@
 <!--Server side code to handle  sign up-->
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+  include('assets/inc/checklogin.php');
+  check_login();
 		if(isset($_POST['admin_sup']))
 		{
 			$ad_fname=$_POST['ad_fname'];
 			$ad_lname=$_POST['ad_lname'];
 			$ad_email=$_POST['ad_email'];
-			$ad_pwd=sha1(md5($_POST['ad_pwd']));//double encrypt to increase security
+			$ad_pwd=password_hash($_POST['ad_pwd'], PASSWORD_DEFAULT);//double encrypt to increase security
             //sql to insert captured values
 			$query="insert into his_admin (ad_fname, ad_lname, ad_email, ad_pwd) values(?,?,?,?)";
 			$stmt = $mysqli->prepare($query);
@@ -33,140 +36,96 @@
 <!--End Login-->
 <!DOCTYPE html>
 <html lang="en">
-    
 <head>
         <meta charset="utf-8" />
-        <title>Hospital Management Information System -A Super Responsive Information System</title>
+        <title>Hospital Management System — Create Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
-        <meta content="Coderthemes" name="author" />
+        <meta content="Create a new administrator account" name="description" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <!-- App favicon -->
+        <meta name="theme-color" content="#2E37A4" />
         <link rel="shortcut icon" href="assets/images/favicon.ico">
-
-        <!-- App css -->
         <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
         <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
-        <!--Load Sweet Alert Javascript-->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link href="../assets/css/hms-theme.css" rel="stylesheet" type="text/css" />
+        <link href="../assets/css/hms-auth.css" rel="stylesheet" type="text/css" />
         <script src="assets/js/swal.js"></script>
-        <!--Inject SWAL-->
         <?php if(isset($success)) {?>
-        <!--This code for injecting an alert-->
                 <script>
-                            setTimeout(function () 
-                            { 
-                                swal("Success","<?php echo $success;?>","success");
+                            setTimeout(function ()
+                            {
+                                swal("Success","<?php echo escape_output($success); ?>","success");
                             },
                                 100);
                 </script>
-
         <?php } ?>
-
         <?php if(isset($err)) {?>
-        <!--This code for injecting an alert-->
                 <script>
-                            setTimeout(function () 
-                            { 
-                                swal("Failed","<?php echo $err;?>","Failed");
+                            setTimeout(function ()
+                            {
+                                swal("Failed","<?php echo escape_output($err); ?>","Failed");
                             },
                                 100);
                 </script>
-
         <?php } ?>
-
     </head>
+    <body class="authentication-bg authentication-bg-pattern hms-auth-page">
+        <div class="hms-auth-stage">
+            <a href="his_admin_dashboard.php" class="hms-auth-back"><i class="mdi mdi-arrow-left"></i> Back to dashboard</a>
 
-    <body class="authentication-bg authentication-bg-pattern">
-
-        <div class="account-pages mt-5 mb-5">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-md-8 col-lg-6 col-xl-5">
-                        <div class="card bg-pattern">
-
-                            <div class="card-body p-4">
-                                
-                                <div class="text-center w-75 m-auto">
-                                    <a href="his_admin_register.php">
-                                        <span><img src="assets/images/logo-dark.png" alt="" height="22"></span>
-                                    </a>
-                                    <p class="text-muted mb-4 mt-3">Don't have an account? Create your account, it takes less than a minute</p>
-                                </div>
-
-                                <form  method='post'>
-
-                                    <div class="form-group">
-                                        <label for="fullname">First Name</label>
-                                        <input class="form-control" type="text"  name = "ad_fname" id="fullname" placeholder="Enter your name" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="fullname">Last Name</label>
-                                        <input class="form-control" type="text" name="ad_lname" id="fullname" placeholder="Enter your name" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="emailaddress">Email address</label>
-                                        <input class="form-control" name="ad_email" type="email" id="emailaddress" required placeholder="Enter your email">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="password">Password</label>
-                                        <input class="form-control" name="ad_pwd" type="password" required id="password" placeholder="Enter your password">
-                                    </div>
-                                    
-                                    <div class="form-group mb-0 text-center">
-                                        <button class="btn btn-primary btn-block" name="admin_sup" type="submit"> Sign Up </button>
-                                    </div>
-
-                                </form>
-                                <!--Lets Disable This For We tryna implement it in later versions of this system
-                                <div class="text-center">
-                                    <h5 class="mt-3 text-muted">Sign up using</h5>
-                                    <ul class="social-list list-inline mt-3 mb-0">
-                                        <li class="list-inline-item">
-                                            <a href="javascript: void(0);" class="social-list-item border-primary text-primary"><i class="mdi mdi-facebook"></i></a>
-                                        </li>
-                                        <li class="list-inline-item">
-                                            <a href="javascript: void(0);" class="social-list-item border-danger text-danger"><i class="mdi mdi-google"></i></a>
-                                        </li>
-                                        <li class="list-inline-item">
-                                            <a href="javascript: void(0);" class="social-list-item border-info text-info"><i class="mdi mdi-twitter"></i></a>
-                                        </li>
-                                        <li class="list-inline-item">
-                                            <a href="javascript: void(0);" class="social-list-item border-secondary text-secondary"><i class="mdi mdi-github-circle"></i></a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                -->
-
-                            </div> <!-- end card-body -->
-                        </div>
-                        <!-- end card -->
-
-                        <div class="row mt-3">
-                            <div class="col-12 text-center">
-                                <p class="text-white-50">Already have account?  <a href="index.php" class="text-white ml-1"><b>Sign In</b></a></p>
-                            </div> <!-- end col -->
-                        </div>
-                        <!-- end row -->
-
-                    </div> <!-- end col -->
+            <div class="hms-auth-card is-wide" data-hms-auth-card>
+                <div class="hms-auth-brandmark">
+                    <img src="assets/images/logo-dark.png" alt="Hospital Management System">
+                    <span class="hms-auth-badge">Administrator Portal</span>
+                    <h1 class="hms-auth-title">Create admin account</h1>
+                    <p class="hms-auth-sub">Add a new administrator. It only takes a minute.</p>
                 </div>
-                <!-- end row -->
+
+                <form method="post" novalidate>
+                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+
+                    <div class="hms-auth-row">
+                        <div class="form-group">
+                            <label for="ad_fname">First name</label>
+                            <input class="form-control" type="text" name="ad_fname" id="ad_fname" placeholder="First name" required autocomplete="given-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="ad_lname">Last name</label>
+                            <input class="form-control" type="text" name="ad_lname" id="ad_lname" placeholder="Last name" required autocomplete="family-name">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emailaddress">Email address</label>
+                        <input class="form-control" name="ad_email" type="email" id="emailaddress" required placeholder="Enter email" autocomplete="email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="hms-auth-pass">
+                            <input class="form-control" name="ad_pwd" type="password" required id="password" placeholder="Create a password" autocomplete="new-password">
+                            <button type="button" class="hms-auth-toggle" data-hms-pass-toggle aria-label="Show password"><i class="mdi mdi-eye-outline"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <button class="btn btn-primary btn-block" name="admin_sup" type="submit">Create account</button>
+                    </div>
+                </form>
+
+                <div class="hms-auth-links">
+                    Already have an account? <a href="index.php">Sign in</a>
+                </div>
             </div>
-            <!-- end container -->
+
+            <p class="hms-auth-foot">&copy; <?php echo date('Y'); ?> Hospital Management System</p>
         </div>
-        <!-- end page -->
 
-        <!--Footer-->
-            <?php include("assets/inc/footer1.php");?>
-        <!-- End Footer-->
-
-        <!-- Vendor js -->
         <script src="assets/js/vendor.min.js"></script>
-
-        <!-- App js -->
         <script src="assets/js/app.min.js"></script>
-        
+        <script src="../assets/js/hms-motion.js"></script>
     </body>
-
 </html>

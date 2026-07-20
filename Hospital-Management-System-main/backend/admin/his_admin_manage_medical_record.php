@@ -1,27 +1,18 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
-  if(isset($_GET['delete_mdr_number']))
-  {
-        $id=intval($_GET['delete_mdr_number']);
-        $adn="DELETE FROM his_medical_records WHERE  mdr_number = ?";
-        $stmt= $mysqli->prepare($adn);
-        $stmt->bind_param('i',$id);
-        $stmt->execute();
-        $stmt->close();	 
-  
-          if($stmt)
-          {
-            $success = "Medical Records Deleted";
-          }
-            else
-            {
-                $err = "Try Again Later";
-            }
-    }
+    $deleteResult = process_post_delete($mysqli, 'delete_mdr_number', 'delete from his_medical_records where mdr_number=?', 's', [], 'Medical record deleted');
+  if ($deleteResult !== null) {
+      if (isset($deleteResult['success'])) {
+          $success = $deleteResult['success'];
+      } else {
+          $err = $deleteResult['err'];
+      }
+  }
 ?>
 
 <!DOCTYPE html>
@@ -121,16 +112,16 @@
 
                                                 <tbody>
                                                 <tr>
-                                                    <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->mdr_pat_name;?></td>
-                                                    <td><?php echo $row->mdr_pat_number;?></td>
-                                                    <td><?php echo $row->mdr_pat_adr;?></td>
-                                                    <td><?php echo $row->mdr_pat_ailment;?></td>
-                                                    <td><?php echo $row->mdr_pat_age;?> Years</td>
+                                                    <td><?php echo escape_output($cnt); ?></td>
+                                                    <td><?php echo escape_output($row->mdr_pat_name); ?></td>
+                                                    <td><?php echo escape_output($row->mdr_pat_number); ?></td>
+                                                    <td><?php echo escape_output($row->mdr_pat_adr); ?></td>
+                                                    <td><?php echo escape_output($row->mdr_pat_ailment); ?></td>
+                                                    <td><?php echo escape_output($row->mdr_pat_age); ?> Years</td>
                                                     <td>
-                                                        <a href="his_admin_view_single_medical_record.php?mdr_id=<?php echo $row->mdr_id;?>&&mdr_number=<?php echo $row->mdr_number;?>" class="badge badge-success"><i class="fas fa-eye"></i> View</a>
-                                                        <a href="his_admin_upate_single_medical_record.php?mdr_number=<?php echo $row->mdr_number;?>" class="badge badge-warning"><i class="fas fa-eye-dropper "></i> Update</a>
-                                                        <a href="his_admin_manage_medical_record.php?delete_mdr_number=<?php echo $row->mdr_number;?>" class="badge badge-danger"><i class=" fas fa-trash-alt "></i> Delete</a>
+                                                        <a href="his_admin_view_single_medical_record.php?mdr_id=<?php echo escape_output($row->mdr_id); ?>&&mdr_number=<?php echo escape_output($row->mdr_number); ?>" class="badge badge-success"><i class="fas fa-eye"></i> View</a>
+                                                        <a href="his_admin_upate_single_medical_record.php?mdr_number=<?php echo escape_output($row->mdr_number); ?>" class="badge badge-warning"><i class="fas fa-eye-dropper "></i> Update</a>
+                                                        <?php echo render_delete_button('delete_mdr_number', $row->mdr_number); ?>
 
                                                     </td>
                                                 </tr>

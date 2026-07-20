@@ -1,28 +1,19 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
   /*
-  if(isset($_GET['delete']))
-  {
-        $id=intval($_GET['delete']);
-        $adn="delete from his_patients where pat_id=?";
-        $stmt= $mysqli->prepare($adn);
-        $stmt->bind_param('i',$id);
-        $stmt->execute();
-        $stmt->close();	 
-  
-          if($stmt)
-          {
-            $success = "Vehicle Removed";
-          }
-            else
-            {
-                $err = "Try Again Later";
-            }
-    }
+    $deleteResult = process_post_delete($mysqli, 'delete', 'delete from his_patients where pat_id=?', 'i', [], 'Patient record deleted');
+  if ($deleteResult !== null) {
+      if (isset($deleteResult['success'])) {
+          $success = $deleteResult['success'];
+      } else {
+          $err = $deleteResult['err'];
+      }
+  }
     */
 ?>
 
@@ -123,13 +114,13 @@
                                                 <tbody>
                                                 <tr>
                                                     <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->pat_fname;?> <?php echo $row->pat_lname;?></td>
-                                                    <td><?php echo $row->pat_number;?></td>
-                                                    <td><?php echo $row->pat_addr;?></td>
-                                                    <td><?php echo $row->pat_type;?></td>
+                                                    <td><?php echo escape_output($row->pat_fname);?> <?php echo escape_output($row->pat_lname);?></td>
+                                                    <td><?php echo escape_output($row->pat_number);?></td>
+                                                    <td><?php echo escape_output($row->pat_addr);?></td>
+                                                    <td><?php echo escape_output($row->pat_type);?></td>
                                                     
                                                     <td>
-                                                        <a href="his_admin_discharge_single_patient.php?pat_id=<?php echo $row->pat_id;?>" class="badge badge-primary"><i class="mdi mdi-check-box-outline "></i> Discharge</a>
+                                                        <a href="his_admin_discharge_single_patient.php?pat_id=<?php echo escape_output($row->pat_id);?>" class="badge badge-primary"><i class="mdi mdi-check-box-outline "></i> Discharge</a>
                                                     </td>
                                                 </tr>
                                                 </tbody>

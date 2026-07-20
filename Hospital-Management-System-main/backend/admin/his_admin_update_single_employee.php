@@ -1,36 +1,55 @@
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['update_doc']))
 		{
 			$doc_fname=$_POST['doc_fname'];
 			$doc_lname=$_POST['doc_lname'];
 			$doc_number=$_GET['doc_number'];
             $doc_email=$_POST['doc_email'];
-            $doc_pwd=sha1(md5($_POST['doc_pwd']));
-            $doc_dpic=$_FILES["doc_dpic"]["name"];
-		    move_uploaded_file($_FILES["doc_dpic"]["tmp_name"],"../doc/assets/images/users/".$_FILES["doc_dpic"]["name"]);
-
-            //sql to insert captured values
-			$query="UPDATE his_docs SET doc_fname=?, doc_lname=?,  doc_email=?, doc_pwd=?, doc_dpic=? WHERE doc_number = ?";
-			$stmt = $mysqli->prepare($query);
-			$rc=$stmt->bind_param('ssssss', $doc_fname, $doc_lname, $doc_email, $doc_pwd, $doc_dpic, $doc_number);
-			$stmt->execute();
-			/*
-			*Use Sweet Alerts Instead Of This Fucked Up Javascript Alerts
-			*echo"<script>alert('Successfully Created Account Proceed To Log In ');</script>";
-			*/ 
-			//declare a varible which will be passed to alert function
-			if($stmt)
-			{
-				$success = "Employee Details Updated";
-			}
-			else {
-				$err = "Please Try Again Or Try Later";
-			}
-			
-			
-		}
+            $doc_dpic = null;
+            if (!empty($_FILES["doc_dpic"]["name"])) {
+                $upload = handle_profile_upload('doc_dpic', __DIR__ . '/../doc/assets/images/users');
+                if (isset($upload['err'])) {
+                    $err = $upload['err'];
+                } else {
+                    $doc_dpic = $upload['filename'];
+                }
+            }
+            if (!isset($err)) {
+                if (!empty($_POST['doc_pwd'])) {
+                    $doc_pwd = password_hash($_POST['doc_pwd'], PASSWORD_DEFAULT);
+                    if ($doc_dpic !== null) {
+                        $query="UPDATE his_docs SET doc_fname=?, doc_lname=?, doc_email=?, doc_pwd=?, doc_dpic=? WHERE doc_number = ?";
+                        $stmt = $mysqli->prepare($query);
+                        $stmt->bind_param('ssssss', $doc_fname, $doc_lname, $doc_email, $doc_pwd, $doc_dpic, $doc_number);
+                    } else {
+                        $query="UPDATE his_docs SET doc_fname=?, doc_lname=?, doc_email=?, doc_pwd=? WHERE doc_number = ?";
+                        $stmt = $mysqli->prepare($query);
+                        $stmt->bind_param('sssss', $doc_fname, $doc_lname, $doc_email, $doc_pwd, $doc_number);
+                    }
+                } else {
+                    if ($doc_dpic !== null) {
+                        $query="UPDATE his_docs SET doc_fname=?, doc_lname=?, doc_email=?, doc_dpic=? WHERE doc_number = ?";
+                        $stmt = $mysqli->prepare($query);
+                        $stmt->bind_param('sssss', $doc_fname, $doc_lname, $doc_email, $doc_dpic, $doc_number);
+                    } else {
+                        $query="UPDATE his_docs SET doc_fname=?, doc_lname=?, doc_email=? WHERE doc_number = ?";
+                        $stmt = $mysqli->prepare($query);
+                        $stmt->bind_param('ssss', $doc_fname, $doc_lname, $doc_email, $doc_number);
+                    }
+                }
+                if ($stmt->execute()) {
+                    $success = "Employee Details Updated";
+                } else {
+                    $err = "Please Try Again Or Try Later";
+                }
+                $stmt->close();
+            }
+        }
 ?>
 <!--End Server Side-->
 <!DOCTYPE html>
@@ -82,7 +101,7 @@
                             $doc_number=$_GET['doc_number'];
                             $ret="SELECT  * FROM his_docs WHERE doc_number=?";
                             $stmt= $mysqli->prepare($ret) ;
-                            $stmt->bind_param('i',$doc_number);
+                            $stmt->bind_param('s',$doc_number);
                             $stmt->execute() ;//ok
                             $res=$stmt->get_result();
                             //$cnt=1;
@@ -96,20 +115,21 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
                                                     <label for="inputEmail4" class="col-form-label">First Name</label>
-                                                    <input type="text" required="required" value="<?php echo $row->doc_fname;?>" name="doc_fname" class="form-control" id="inputEmail4" >
+                                                    <input type="text" required="required" value="<?php echo escape_output($row->doc_fname); ?>" name="doc_fname" class="form-control" id="inputEmail4" >
                                                 </div>
                                                 <div class="form-group col-md-6">
                                                     <label for="inputPassword4" class="col-form-label">Last Name</label>
-                                                    <input required="required" type="text" value="<?php echo $row->doc_lname;?>" name="doc_lname" class="form-control"  id="inputPassword4">
+                                                    <input required="required" type="text" value="<?php echo escape_output($row->doc_lname); ?>" name="doc_lname" class="form-control"  id="inputPassword4">
                                                 </div>
                                             </div>
 
                                             <div class="form-group">
                                                 <label for="inputAddress" class="col-form-label">Email</label>
-                                                <input required="required" type="email" value="<?php echo $row->doc_email;?>" class="form-control" name="doc_email" id="inputAddress">
+                                                <input required="required" type="email" value="<?php echo escape_output($row->doc_email); ?>" class="form-control" name="doc_email" id="inputAddress">
                                             </div>
                                             
                                             <div class="form-row">

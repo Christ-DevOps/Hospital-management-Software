@@ -1,7 +1,10 @@
 <!--Server side code to handle  Patient Registration-->
 <?php
 	session_start();
-	include('assets/inc/config.php');
+	include('../config.php');
+    include('../security.php');
+    include('assets/inc/checklogin.php');
+    check_login();
 		if(isset($_POST['update_patient']))
 		{
             $s_pat_number = $_POST['s_pat_number'];
@@ -83,7 +86,7 @@
                             $s_number=$_GET['s_number'];
                             $ret="SELECT  * FROM his_surgery WHERE s_number=?";
                             $stmt= $mysqli->prepare($ret) ;
-                            $stmt->bind_param('i',$s_number);
+                            $stmt->bind_param('s',$s_number);
                             $stmt->execute() ;//ok
                             $res=$stmt->get_result();
                             //$cnt=1;
@@ -97,21 +100,22 @@
                                         <h4 class="header-title">Fill all fields</h4>
                                         <!--Add Patient Form-->
                                         <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
                                                     <label for="inputEmail4" class="col-form-label">Patient Name</label>
-                                                    <input type="text" readonly required="required" value="<?php echo $row->s_pat_name;?>" name="s_pat_name" class="form-control" id="inputEmail4" placeholder="Patient's First Name">
+                                                    <input type="text" readonly required="required" value="<?php echo escape_output($row->s_pat_name); ?>" name="s_pat_name" class="form-control" id="inputEmail4" placeholder="Patient's First Name">
                                                 </div>
                                                 <div class="form-group col-md-6">
                                                     <label for="inputPassword4" class="col-form-label">Patient Ailment</label>
-                                                    <input readonly required="required" type="text" value="<?php echo $row->s_pat_ailment;?>" name="s_pat_ailment" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
+                                                    <input readonly required="required" type="text" value="<?php echo escape_output($row->s_pat_ailment); ?>" name="s_pat_ailment" class="form-control"  id="inputPassword4" placeholder="Patient`s Last Name">
                                                 </div>
                                             </div>
 
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
                                                     <label for="inputEmail4" class="col-form-label">Patient Number</label>
-                                                    <input readonly type="text" required="required" value="<?php echo $row->s_pat_number;?>" name="s_pat_number" class="form-control" id="inputEmail4" placeholder="DD/MM/YYYY">
+                                                    <input readonly type="text" required="required" value="<?php echo escape_output($row->s_pat_number); ?>" name="s_pat_number" class="form-control" id="inputEmail4" placeholder="DD/MM/YYYY">
                                                 </div>
                                                 <div class="form-group col-md-6">
                                                     <label for="inputState" class="col-form-label">Surgeon</label>
@@ -127,7 +131,7 @@
                                                         while($row=$res->fetch_object())
                                                         {
                                                     ?>
-                                                        <option><?php echo $row->doc_fname;?> <?php echo $row->doc_lname;?></option>
+                                                        <option><?php echo escape_output($row->doc_fname); ?> <?php echo escape_output($row->doc_lname); ?></option>
 
                                                     <?php }?>
                                                     </select>

@@ -1,6 +1,7 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $doc_id = $_SESSION['doc_id'];
@@ -99,10 +100,10 @@
 
                                                 <tbody>
                                                 <tr>
-                                                    <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->pharm_cat_name;?></td>
-                                                    <td><?php echo $row->pharm_cat_vendor;?></td>
-                                                    <td><a href="his_doc_view_single_pharm_category.php?pharm_cat_id=<?php echo $row->pharm_cat_id;?>" class="badge badge-success"><i class="mdi mdi-eye"></i> View</a></td>
+                                                    <td><?php echo escape_output($cnt); ?></td>
+                                                    <td><?php echo escape_output($row->pharm_cat_name); ?></td>
+                                                    <td><?php echo escape_output($row->pharm_cat_vendor); ?></td>
+                                                    <td><a href="his_doc_view_single_pharm_category.php?pharm_cat_id=<?php echo escape_output($row->pharm_cat_id); ?>" class="badge badge-success"><i class="mdi mdi-eye"></i> View</a></td>
                                                 </tr>
                                                 </tbody>
                                             <?php  $cnt = $cnt +1 ; }?>

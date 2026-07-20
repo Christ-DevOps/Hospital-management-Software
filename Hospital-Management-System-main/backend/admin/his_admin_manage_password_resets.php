@@ -1,27 +1,48 @@
 <?php
   session_start();
-  include('assets/inc/config.php');
+  include('../config.php');
+    include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['ad_id'];
-  if(isset($_GET['deleteRequest']))
-  {
-        $id=intval($_GET['deleteRequest']);
-        $adn="DELETE FROM his_pwdresets WHERE  id = ?";
-        $stmt= $mysqli->prepare($adn);
-        $stmt->bind_param('i',$id);
-        $stmt->execute();
-        $stmt->close();	 
-  
-          if($stmt)
-          {
-            $success = "Deleted";
-          }
-            else
-            {
-                $err = "Try Again Later";
-            }
-    }
+
+  if (isset($_POST['approve_reset'])) {
+      $reset_id = (int) ($_POST['reset_id'] ?? 0);
+      $stmt = $mysqli->prepare('SELECT email, status FROM his_pwdresets WHERE id = ?');
+      $stmt->bind_param('i', $reset_id);
+      $stmt->execute();
+      $res = $stmt->get_result();
+      $row = $res->fetch_object();
+      $stmt->close();
+
+      if (!$row || $row->status !== 'Pending') {
+          $err = 'Reset request not found or already processed.';
+      } else {
+          $temp_password = bin2hex(random_bytes(4));
+          $hashed = password_hash($temp_password, PASSWORD_DEFAULT);
+          $updateDoc = $mysqli->prepare('UPDATE his_docs SET doc_pwd = ? WHERE doc_email = ?');
+          $updateDoc->bind_param('ss', $hashed, $row->email);
+          $updateDoc->execute();
+          $updateDoc->close();
+
+          $status = 'Approved';
+          $updateReset = $mysqli->prepare('UPDATE his_pwdresets SET status = ? WHERE id = ?');
+          $updateReset->bind_param('si', $status, $reset_id);
+          $updateReset->execute();
+          $updateReset->close();
+
+          $success = 'Password reset approved for ' . $row->email . '. Temporary password: ' . $temp_password;
+      }
+  }
+
+  $deleteResult = process_post_delete($mysqli, 'deleteRequest', 'DELETE FROM his_pwdresets WHERE id = ?', 'i', [(string) ($_POST['deleteRequest'] ?? '')], 'Reset request deleted');
+  if ($deleteResult !== null) {
+      if (isset($deleteResult['success'])) {
+          $success = $deleteResult['success'];
+      } else {
+          $err = $deleteResult['err'];
+      }
+  }
 ?>
 
 <!DOCTYPE html>
@@ -97,40 +118,43 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th data-toggle="true">Email</th>
-                                                <th data-hide="phone">Password Reset Token</th>
+                                                <th data-hide="phone">Status</th>
                                                 <th data-hide="phone">Date Requested</th>
                                                 <th data-hide="phone">Action</th>
                                             </tr>
                                             </thead>
                                             <?php
-                                                
                                                 $ret="SELECT * FROM  his_pwdresets"; 
                                                 $stmt= $mysqli->prepare($ret) ;
-                                                $stmt->execute() ;//ok
+                                                $stmt->execute() ;
                                                 $res=$stmt->get_result();
                                                 $cnt=1;
                                                 while($row=$res->fetch_object())
                                                 {
-                                                    //trim timestamp to DD-MM-YYYY Formart
-                                                    $requestedtime = $row->created_at;
-
+                                                    $requestedtime = $row->created_at ?? '';
                                                     if($row->status == 'Pending')
                                                     {
-                                                        $action = "<td><a href='his_admin_update_doc_password.php?email=$row->email&pwd=$row->pwd' class='badge badge-danger'><i class='fas fa-edit'></i>Reset Password</a></td>";
+                                                        $action = '<form method="post" class="d-inline">'
+                                                            . '<input type="hidden" name="csrf_token" value="' . escape_output(generate_csrf_token()) . '">'
+                                                            . '<input type="hidden" name="reset_id" value="' . escape_output((string) $row->id) . '">'
+                                                            . '<button type="submit" name="approve_reset" class="badge badge-danger border-0"><i class="fas fa-edit"></i> Approve Reset</button>'
+                                                            . '</form> '
+                                                            . render_delete_button('deleteRequest', $row->id);
                                                     }
                                                     else
                                                     {
-                                                        $action = "<td><a href='mailto:$row->email?subject=Password Reset Request&body=Token:$row->token,   New Password=$row->pwd' class='badge badge-success'><i class='fas fa-envelope'></i>Send Mail</a></td>";
+                                                        $action = '<span class="badge badge-success">Approved</span> '
+                                                            . render_delete_button('deleteRequest', $row->id);
                                                     }
                                             ?>
 
                                                 <tbody>
                                                 <tr>
-                                                    <td><?php echo $cnt;?></td>
-                                                    <td><?php echo $row->email;?></td>
-                                                    <td><?php echo $row->token;?></td>
-                                                    <td><?php echo date('d-M-Y h:m'), strtotime($requestedtime);?></td>
-                                                    <?php echo $action;?>
+                                                    <td><?php echo escape_output($cnt); ?></td>
+                                                    <td><?php echo escape_output($row->email); ?></td>
+                                                    <td><?php echo escape_output($row->status); ?></td>
+                                                    <td><?php echo $requestedtime ? escape_output(date('d-M-Y H:i', strtotime($requestedtime))) : ''; ?></td>
+                                                    <td><?php echo $action; ?></td>
                                                 </tr>
                                                 </tbody>
                                             <?php  $cnt = $cnt +1 ; }?>
