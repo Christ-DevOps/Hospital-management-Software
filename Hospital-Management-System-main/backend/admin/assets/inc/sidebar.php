@@ -16,6 +16,13 @@
                     </a>
                 </li>
 
+                <li>
+                    <a href="his_admin_sector_picker.php">
+                        <i class="mdi mdi-view-grid-outline"></i>
+                        <span>Sectors</span>
+                    </a>
+                </li>
+
                 <!-- ────── CLINIC ────── -->
                 <li class="menu-title">Clinic</li>
 

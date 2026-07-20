@@ -17,6 +17,13 @@
                                 
                             </li>
 
+                            <li>
+                                <a href="his_doc_sector_picker.php">
+                                    <i class="mdi mdi-view-grid-outline"></i>
+                                    <span> Sectors </span>
+                                </a>
+                            </li>
+
                             <li class="menu-title">Clinic</li>
 
                             <li>

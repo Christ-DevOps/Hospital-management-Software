@@ -30,6 +30,20 @@
    mysql -u root -p hospital-management < Database/migrations/001_align_schema_and_passwords.sql
    ```
 
+   **Stage A (demo-checkpoint)** — Cameroon patient fields + appointments:
+   ```bash
+   mysql -u root -p hospital-management < Database/migrations/2026_08_20_stage_a_additive.sql
+   ```
+
+   **Stage B (`feat/schema-sectors` only)** — backup first, then:
+   ```bash
+   mysqldump -u root -p hospital-management > backup_pre_stage_b.sql
+   mysql -u root -p hospital-management < Database/migrations/2026_08_21_stage_b_relational.sql
+   mysql -u root -p hospital-management < Database/migrations/2026_08_21_stage_b_sectors.sql
+   ```
+   Reverse: `Database/migrations/2026_08_21_stage_b_down.sql` (prefer restore from backup).
+   See `docs/STAGE_B_VERIFICATION.md`.
+
 4. **Configure environment** — copy and edit:
    ```bash
    cp backend/.env.example backend/.env

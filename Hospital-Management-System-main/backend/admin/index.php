@@ -21,7 +21,14 @@
                 if (!password_verify($ad_pwd_input, $ad_pwd_hash)) {
                     migrate_password_if_legacy($mysqli, 'his_admin', 'ad_id', $ad_id, 'ad_pwd', $ad_pwd_input);
                 }
-                header("location:his_admin_dashboard.php");
+                include_once('../assets/inc/nex_sectors.php');
+                nex_bootstrap_session_from_legacy($mysqli, 'admin', (int) $ad_id);
+                $assignments = $_SESSION['nex_assignments'] ?? [];
+                if (count($assignments) > 1) {
+                    header('location:his_admin_sector_picker.php');
+                } else {
+                    header('location:his_admin_dashboard.php');
+                }
                 exit;
             }
             else

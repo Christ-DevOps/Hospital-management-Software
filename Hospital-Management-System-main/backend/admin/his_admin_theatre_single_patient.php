@@ -13,15 +13,21 @@
 			$s_pat_status=$_POST['s_pat_status'];
             $s_pat_ailment = $_POST['s_pat_ailment'];
             $s_doc = $_POST['s_doc'];
-            //sql to insert captured values
-			$query="INSERT INTO  his_surgery (s_pat_number, s_number, s_pat_name, s_pat_status, s_pat_ailment, s_doc) VALUES(?,?,?,?,?,?)";
+            include_once('../assets/inc/nex_sectors.php');
+            $pat_id = nex_resolve_pat_id($mysqli, $s_pat_number);
+            $doc_id = null;
+            $ds = $mysqli->prepare("SELECT doc_id FROM his_docs WHERE CONCAT(doc_fname,' ',doc_lname)=? LIMIT 1");
+            if ($ds) {
+                $ds->bind_param('s', $s_doc);
+                $ds->execute();
+                $drow = $ds->get_result()->fetch_object();
+                $ds->close();
+                if ($drow) { $doc_id = (int) $drow->doc_id; }
+            }
+			$query="INSERT INTO his_surgery (pat_id, doc_id, s_pat_number, s_number, s_pat_name, s_pat_status, s_pat_ailment, s_doc) VALUES(?,?,?,?,?,?,?,?)";
 			$stmt = $mysqli->prepare($query);
-			$rc=$stmt->bind_param('ssssss', $s_pat_number, $s_number, $s_pat_name, $s_pat_status, $s_pat_ailment, $s_doc);
+			$rc=$stmt->bind_param('iissssss', $pat_id, $doc_id, $s_pat_number, $s_number, $s_pat_name, $s_pat_status, $s_pat_ailment, $s_doc);
 			$stmt->execute();
-			/*
-			*Use Sweet Alerts Instead Of This Fucked Up Javascript Alerts
-			*echo"<script>alert('Successfully Created Account Proceed To Log In ');</script>";
-			*/ 
 			//declare a varible which will be passed to alert function
 			if($stmt)
 			{

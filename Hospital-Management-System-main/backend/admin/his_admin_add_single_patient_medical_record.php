@@ -15,16 +15,12 @@
             $mdr_number = $_POST['mdr_number'];
             $mdr_pat_prescr = $_POST['mdr_pat_prescr'];
             $mdr_pat_ailment = $_POST['mdr_pat_ailment'];
-            //sql to insert captured values
-			$query="INSERT INTO  his_medical_records  (mdr_pat_name, mdr_pat_number, mdr_pat_adr, mdr_pat_age, mdr_number, mdr_pat_prescr, mdr_pat_ailment) VALUES(?,?,?,?,?,?,?)";
+            include_once('../assets/inc/nex_sectors.php');
+            $pat_id = nex_resolve_pat_id($mysqli, $mdr_pat_number);
+			$query="INSERT INTO his_medical_records (pat_id, mdr_pat_name, mdr_pat_number, mdr_pat_adr, mdr_pat_age, mdr_number, mdr_pat_prescr, mdr_pat_ailment) VALUES(?,?,?,?,?,?,?,?)";
 			$stmt = $mysqli->prepare($query);
-			$rc=$stmt->bind_param('sssssss', $mdr_pat_name, $mdr_pat_number, $mdr_pat_adr, $mdr_pat_age, $mdr_number, $mdr_pat_prescr, $mdr_pat_ailment);
+			$rc=$stmt->bind_param('isssssss', $pat_id, $mdr_pat_name, $mdr_pat_number, $mdr_pat_adr, $mdr_pat_age, $mdr_number, $mdr_pat_prescr, $mdr_pat_ailment);
 			$stmt->execute();
-			/*
-			*Use Sweet Alerts Instead Of This Fucked Up Javascript Alerts
-			*echo"<script>alert('Successfully Created Account Proceed To Log In ');</script>";
-			*/ 
-			//declare a varible which will be passed to alert function
 			if($stmt)
 			{
 				$success = "Patient Medical Record Addded";
@@ -32,8 +28,6 @@
 			else {
 				$err = "Please Try Again Or Try Later";
 			}
-			
-			
 		}
 ?>
 <!--End Server Side-->
