@@ -1,30 +1,31 @@
-# Hospital Management System
+# NexClinic
 
-Facility management for hospital operations: patients, employees, pharmacy, laboratory, accounting, payroll, surgery/theatre, and reporting.
+Sector-based hospital operations: patients, clinical care, pharmacy, laboratory, accounting, payroll, theatre, and reporting.
 
 ## Setup
 
-See [SETUP.md](SETUP.md) for installation, PHP extension requirements, database import, and deployment.
+See [SETUP.md](SETUP.md) for installation, PHP extensions, database import, and deployment.
+
+Role & sector specification: [docs/NEXCLINIC_ROLE_FUNCTIONALITY.md](docs/NEXCLINIC_ROLE_FUNCTIONALITY.md)
+
+Modernisation roadmap & gap register: [docs/NEXCLINIC_ROADMAP.md](docs/NEXCLINIC_ROADMAP.md)
+
+Role-based workspace architecture (mandatory): [docs/NEXCLINIC_WORKSPACES.md](docs/NEXCLINIC_WORKSPACES.md)
 
 ## Login URLs
 
 - **Admin:** `backend/admin/index.php`
-- **Doctor:** `backend/doc/index.php`
+- **Staff / Doctor:** `backend/doc/index.php`
 
 ## Default Credentials
 
 | Role | Identifier | Password |
 |------|------------|----------|
-| Admin | `admin@mail.com` | `Password@123` |
-| Doctor | `YDS7L` | `password` |
+| Admin | `newadmin@hospital.local` | `Admin@Hospital2026` |
+| Doctor | `DOC001` | `Doctor@2026` |
 
-Change default passwords before deploying to production.
+Change default passwords before production.
 
 ## Security
 
-This project includes CSRF protection, bcrypt password hashing, secure session settings, POST-based deletes, and hardened file uploads. See `backend/security.php` for shared helpers.
-
-
-## Credentials
- Admin login (newadmin@hospital.local / Admin@Hospital2026)
- Doctor login (DOC001 / Doctor@2026)
+CSRF protection, bcrypt password hashing, secure sessions, POST-based deletes, and hardened uploads. See `backend/security.php`.

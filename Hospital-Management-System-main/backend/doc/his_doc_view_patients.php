@@ -114,7 +114,10 @@
                                                     <td><?php echo escape_output($row->pat_age); ?> Years</td>
                                                     <td><?php echo escape_output($row->pat_type); ?></td>
                                                     
-                                                    <td><a href="his_doc_view_single_patient.php?pat_id=<?php echo escape_output($row->pat_id); ?>&&pat_number=<?php echo escape_output($row->pat_number); ?>&&pat_name=<?php echo escape_output($row->pat_fname); ?>_<?php echo escape_output($row->pat_lname); ?>" class="badge badge-success"><i class="mdi mdi-eye"></i> View</a></td>
+                                                    <td>
+                                                        <a href="his_doc_view_single_patient.php?pat_id=<?php echo escape_output($row->pat_id); ?>&&pat_number=<?php echo escape_output($row->pat_number); ?>&&pat_name=<?php echo escape_output($row->pat_fname); ?>_<?php echo escape_output($row->pat_lname); ?>" class="badge badge-success"><i class="mdi mdi-eye"></i> View</a>
+                                                        <a href="his_doc_efile_single_patient.php?pat_id=<?php echo escape_output($row->pat_id); ?>" class="badge badge-info"><i class="mdi mdi-file-document"></i> E-File</a>
+                                                    </td>
                                                 </tr>
                                                 </tbody>
                                             <?php  $cnt = $cnt +1 ; }?>

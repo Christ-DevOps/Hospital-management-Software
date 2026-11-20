@@ -4,6 +4,7 @@
     include('../security.php');
     include('assets/inc/checklogin.php');
     check_login();
+    require_once('../assets/inc/notification_events.php');
 		if(isset($_POST['add_patient_lab_result']))
 		{
 			$lab_pat_name = $_POST['lab_pat_name'];
@@ -15,18 +16,17 @@
             //$pres_ins = $_POST['pres_ins'];
             //$pres_pat_ailment = $_POST['pres_pat_ailment'];
             //sql to insert captured values
-			$query="UPDATE   his_laboratory  SET lab_pat_name=?, lab_pat_ailment=?, lab_pat_number=?, lab_pat_tests=?, lab_pat_results=? WHERE  lab_number = ? ";
+			$validated_by = nex_actor_id();
+			$query="UPDATE   his_laboratory  SET lab_pat_name=?, lab_pat_ailment=?, lab_pat_number=?, lab_pat_tests=?, lab_pat_results=?, validated_by=? WHERE  lab_number = ? ";
 			$stmt = $mysqli->prepare($query);
-			$rc=$stmt->bind_param('ssssss', $lab_pat_name, $lab_pat_ailment, $lab_pat_number, $lab_pat_tests, $lab_pat_results, $lab_number);
-			$stmt->execute();
-			/*
-			*Use Sweet Alerts Instead Of This Fucked Up Javascript Alerts
-			*echo"<script>alert('Successfully Created Account Proceed To Log In ');</script>";
-			*/ 
-			//declare a varible which will be passed to alert function
-			if($stmt)
+			$rc=$stmt->bind_param('sssssis', $lab_pat_name, $lab_pat_ailment, $lab_pat_number, $lab_pat_tests, $lab_pat_results, $validated_by, $lab_number);
+			if ($stmt->execute())
 			{
 				$success = "Patient Laboratory Results Addded";
+				$notif_pat_id = nex_resolve_pat_id($mysqli, $lab_pat_number);
+				if ($notif_pat_id) {
+					notify_lab_result_ready($mysqli, $notif_pat_id);
+				}
 			}
 			else {
 				$err = "Please Try Again Or Try Later";

@@ -85,6 +85,7 @@
                                                 <th data-hide="phone">Patient Ailment</th>
                                                 <th data-hide="phone">Patient Age</th>
                                                 <th data-hide="phone">Patient Category</th>
+                                                <th data-hide="phone">Pharmacy</th>
                                                 <th data-hide="phone">Action</th>
                                             </tr>
                                             </thead>
@@ -112,14 +113,14 @@
                                                     <td><?php echo escape_output($row->pres_pat_ailment); ?></td>
                                                     <td><?php echo escape_output($row->pres_pat_age); ?> Years</td>
                                                     <td><?php echo escape_output($row->pres_pat_type); ?></td>
-                                                    
+                                                    <td><?php echo escape_output(isset($row->pres_status) ? $row->pres_status : '—'); ?></td>
                                                     <td><a href="his_doc_view_single_pres.php?pres_number=<?php echo escape_output($row->pres_number); ?>&&pres_id=<?php echo escape_output($row->pres_id); ?>" class="badge badge-success"><i class="fas fa-eye"></i> View Prescription</a></td>
                                                 </tr>
                                                 </tbody>
                                             <?php  $cnt = $cnt +1 ; }?>
                                             <tfoot>
                                             <tr class="active">
-                                                <td colspan="8">
+                                                <td colspan="9">
                                                     <div class="text-right">
                                                         <ul class="pagination pagination-rounded justify-content-end footable-pagination m-t-10 mb-0"></ul>
                                                     </div>

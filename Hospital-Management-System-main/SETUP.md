@@ -1,4 +1,4 @@
-# Hospital Management System — Setup Guide
+# NexClinic — Setup Guide
 
 ## Requirements
 
@@ -44,6 +44,11 @@
    Reverse: `Database/migrations/2026_08_21_stage_b_down.sql` (prefer restore from backup).
    See `docs/STAGE_B_VERIFICATION.md`.
 
+   **Prescription → pharmacy dispense** (structured drug lines + stock deduction):
+   ```bash
+   mysql -u root -p hospital-management < Database/migrations/2026_08_07_prescription_dispense.sql
+   ```
+
 4. **Configure environment** — copy and edit:
    ```bash
    cp backend/.env.example backend/.env
@@ -62,19 +67,28 @@
 
 | Role | Identifier | Password |
 |------|------------|----------|
-| Admin | `admin@mail.com` | `Password@123` |
-| Doctor | `YDS7L` | `password` |
+| Admin | `newadmin@hospital.local` | `Admin@Hospital2026` |
+| Doctor | `DOC001 / Doctor@2026` |
 
 Change these immediately after first login in production.
 
 ## PHP Built-in Server (development only)
 
+Run from the **inner** project folder (the one that contains `index.php` and `backend/`):
+
 ```bash
 cd Hospital-Management-System-main
-php -S localhost:8080
+php -S 127.0.0.1:6000
 ```
 
-Visit `http://localhost:8080/`
+Then open:
+
+- Landing: `http://127.0.0.1:6000/`
+- Admin login: `http://127.0.0.1:6000/backend/admin/index.php`
+- Create admin: `http://127.0.0.1:6000/backend/admin/his_admin_register.php`
+- Doctor login: `http://127.0.0.1:6000/backend/doc/index.php`
+
+Patient registration pages require login first (Admin → Patients → Register, or Doctor → Register Patient).
 
 ## Production Checklist
 

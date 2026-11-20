@@ -4,6 +4,7 @@
     include('../security.php');
     include('assets/inc/checklogin.php');
     check_login();
+    require_once('../assets/inc/nex_care.php');
 		if(isset($_POST['add_patient_lab_test']))
 		{
 			$lab_pat_name = $_POST['lab_pat_name'];
@@ -11,15 +12,19 @@
             $lab_pat_number  = $_POST['lab_pat_number'];
             $lab_pat_tests = $_POST['lab_pat_tests'];
             $lab_number  = $_POST['lab_number'];
-            include_once('../assets/inc/nex_sectors.php');
-            $pat_id = nex_resolve_pat_id($mysqli, $lab_pat_number);
-			$query="INSERT INTO his_laboratory (pat_id, lab_pat_name, lab_pat_ailment, lab_pat_number, lab_pat_tests, lab_number) VALUES(?,?,?,?,?,?)";
+			$ordered_by = nex_actor_id();
+			$query="INSERT INTO his_laboratory (lab_pat_name, lab_pat_ailment, lab_pat_number, lab_pat_tests, lab_number, ordered_by) VALUES(?,?,?,?,?,?)";
 			$stmt = $mysqli->prepare($query);
-			$rc=$stmt->bind_param('isssss', $pat_id, $lab_pat_name, $lab_pat_ailment, $lab_pat_number, $lab_pat_tests, $lab_number);
-			$stmt->execute();
-			if($stmt)
+			$rc=$stmt->bind_param('sssssi', $lab_pat_name, $lab_pat_ailment, $lab_pat_number, $lab_pat_tests, $lab_number, $ordered_by);
+			if ($stmt->execute())
 			{
 				$success = "Patient Laboratory Tests Addded";
+				if ($ordered_by) {
+					$lab_pat_id = nex_resolve_pat_id($mysqli, $lab_pat_number);
+					if ($lab_pat_id) {
+						nex_ensure_care_relationship($mysqli, $lab_pat_id, $ordered_by);
+					}
+				}
 			}
 			else {
 				$err = "Please Try Again Or Try Later";

@@ -1,251 +1,92 @@
-<div class="left-side-menu">
+<?php
+/**
+ * Workspace sidebar. Renders ONLY the active workspace's navigation.
+ * Spec: docs/NEXCLINIC_WORKSPACES.md — other workspaces' items are never
+ * emitted here, so there is nothing to un-hide in the DOM. Menu contents
+ * live in backend/assets/inc/nex_workspace.php, not in this file.
+ */
+if (!function_exists('nex_admin_url')) {
+    require_once dirname(__DIR__, 3) . '/assets/inc/nex_paths.php';
+}
+if (!function_exists('nex_workspace_for_user')) {
+    require_once dirname(__DIR__, 3) . '/assets/inc/nex_workspace.php';
+}
+
+$nex_ws = nex_workspace_for_user();
+$nex_ws_meta = nex_workspace_meta($nex_ws);
+$nex_ws_nav = nex_workspace_nav($nex_ws);
+$nex_ws_switch = nex_workspace_available();
+$nex_current = basename($_SERVER['SCRIPT_NAME'] ?? '');
+
+/** Mark the item matching the current script. */
+$nex_is_active = function ($href) use ($nex_current) {
+    return $nex_current !== '' && basename($href) === $nex_current;
+};
+?>
+<div class="left-side-menu hms-workspace <?php echo escape_output($nex_ws_meta['accent']); ?>">
 
     <div class="slimscroll-menu">
 
-        <!-- ── Sidebar Menu ── -->
+        <div class="hms-workspace-brand">
+            <i class="mdi <?php echo escape_output($nex_ws_meta['icon']); ?>"></i>
+            <div class="hms-workspace-brand-text">
+                <span class="hms-workspace-label"><?php echo escape_output($nex_ws_meta['label']); ?></span>
+                <small class="hms-workspace-tagline"><?php echo escape_output($nex_ws_meta['tagline']); ?></small>
+            </div>
+        </div>
+
         <div id="sidebar-menu">
             <ul class="metismenu" id="side-menu">
 
-                <!-- ────── MAIN MENU ────── -->
-                <li class="menu-title">Main Menu</li>
+                <?php foreach ($nex_ws_nav as $section) { ?>
+                    <?php if (!empty($section['title'])) { ?>
+                        <li class="menu-title"><?php echo escape_output($section['title']); ?></li>
+                    <?php } ?>
 
-                <li>
-                    <a href="his_admin_dashboard.php">
-                        <i class="mdi mdi-view-dashboard-outline"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
+                    <?php foreach ($section['items'] as $item) { ?>
+                        <?php if (!empty($item['children'])) { ?>
+                            <li>
+                                <a href="javascript: void(0);">
+                                    <i class="mdi <?php echo escape_output($item['icon'] ?? 'mdi-circle-small'); ?>"></i>
+                                    <span><?php echo escape_output($item['label']); ?></span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <ul class="nav-second-level" aria-expanded="false">
+                                    <?php foreach ($item['children'] as $child) { ?>
+                                        <li<?php echo $nex_is_active($child['href']) ? ' class="menuitem-active"' : ''; ?>>
+                                            <a href="<?php echo escape_output(nex_admin_url($child['href'])); ?>">
+                                                <?php echo escape_output($child['label']); ?>
+                                            </a>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            </li>
+                        <?php } else { ?>
+                            <li<?php echo $nex_is_active($item['href']) ? ' class="menuitem-active"' : ''; ?>>
+                                <a href="<?php echo escape_output(nex_admin_url($item['href'])); ?>">
+                                    <i class="mdi <?php echo escape_output($item['icon'] ?? 'mdi-circle-small'); ?>"></i>
+                                    <span><?php echo escape_output($item['label']); ?></span>
+                                </a>
+                            </li>
+                        <?php } ?>
+                    <?php } ?>
+                <?php } ?>
 
-                <li>
-                    <a href="his_admin_sector_picker.php">
-                        <i class="mdi mdi-view-grid-outline"></i>
-                        <span>Sectors</span>
-                    </a>
-                </li>
+                <?php if (count($nex_ws_switch) > 1) { ?>
+                    <li class="menu-title">Switch Workspace</li>
+                    <?php foreach ($nex_ws_switch as $code => $meta) { ?>
+                        <?php if ($code === $nex_ws) { continue; } ?>
+                        <li>
+                            <a href="<?php echo escape_output(nex_admin_url('his_admin_workspace_switch.php?workspace=' . urlencode($code))); ?>">
+                                <i class="mdi <?php echo escape_output($meta['icon']); ?>"></i>
+                                <span><?php echo escape_output($meta['label']); ?></span>
+                            </a>
+                        </li>
+                    <?php } ?>
+                <?php } ?>
 
-                <!-- ────── CLINIC ────── -->
-                <li class="menu-title">Clinic</li>
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-hospital-box-outline"></i>
-                        <span>Patients</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_register_patient.php">Register Patient</a></li>
-                        <li><a href="his_admin_view_patients.php">View Patients</a></li>
-                        <li><a href="his_admin_manage_patient.php">Manage Patients</a></li>
-                        <hr>
-                        <li><a href="his_admin_discharge_patient.php">Discharge Patients</a></li>
-                        <li><a href="his_admin_patient_transfer.php">Patient Transfers</a></li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-calendar-month-outline"></i>
-                        <span>Appointments</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_appointments.php">View Appointments</a></li>
-                        <li><a href="his_admin_add_appointment.php">Book Appointment</a></li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-pill"></i>
-                        <span>Pharmacy</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_add_pharm_cat.php">Add Pharm Category</a></li>
-                        <li><a href="his_admin_view_pharm_cat.php">View Pharm Category</a></li>
-                        <li><a href="his_admin_manage_pharm_cat.php">Manage Pharm Category</a></li>
-                        <hr>
-                        <li><a href="his_admin_add_pharmaceuticals.php">Add Pharmaceuticals</a></li>
-                        <li><a href="his_admin_view_pharmaceuticals.php">View Pharmaceuticals</a></li>
-                        <li><a href="his_admin_manage_pharmaceuticals.php">Manage Pharmaceuticals</a></li>
-                        <hr>
-                        <li><a href="his_admin_add_presc.php">Add Prescriptions</a></li>
-                        <li><a href="his_admin_view_presc.php">View Prescriptions</a></li>
-                        <li><a href="his_admin_manage_presc.php">Manage Prescriptions</a></li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-flask"></i>
-                        <span>Laboratory</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_lab_report.php">Lab Reports</a></li>
-                        <li><a href="his_admin_patient_lab_test.php">Patient Lab Tests</a></li>
-                        <li><a href="his_admin_patient_lab_result.php">Lab Results</a></li>
-                        <li><a href="his_admin_patient_lab_vitals.php">Patient Vitals</a></li>
-                        <li><a href="his_admin_employee_lab_vitals.php">Employee Vitals</a></li>
-                        <hr>
-                        <li><a href="his_admin_add_lab_equipment.php">Add Lab Equipment</a></li>
-                        <li><a href="his_admin_manage_lab_equipment.php">Manage Lab Equipment</a></li>
-                    </ul>
-                </li>
-
-                <!-- ────── HRM ────── -->
-                <li class="menu-title">HRM</li>
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-doctor"></i>
-                        <span>Employees</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_add_employee.php">Add Employee</a></li>
-                        <li><a href="his_admin_view_employee.php">View Employees</a></li>
-                        <li><a href="his_admin_manage_employee.php">Manage Employees</a></li>
-                        <hr>
-                        <li><a href="his_admin_assaign_dept.php">Assign Department</a></li>
-                        <li><a href="his_admin_transfer_employee.php">Transfer Employee</a></li>
-                    </ul>
-                </li>
-
-                <!-- Attendance module hidden until a real attendance feature ships (was a vitals stub). -->
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-cash"></i>
-                        <span>Payroll</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_add_payroll.php">Add Payroll</a></li>
-                        <li><a href="his_admin_generate_payrolls.php">Generate Payrolls</a></li>
-                        <li><a href="his_admin_manage_payrolls.php">Manage Payrolls</a></li>
-                    </ul>
-                </li>
-
-                <!-- ────── FINANCE ────── -->
-                <li class="menu-title">Finance &amp; Accounts</li>
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-cash-multiple"></i>
-                        <span>Accounting</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_add_acc.payable.php">Add Acc. Payable</a></li>
-                        <li><a href="his_admin_manage_acc_payable.php">Manage Acc. Payable</a></li>
-                        <hr>
-                        <li><a href="his_admin_add_acc_receivable.php">Add Acc. Receivable</a></li>
-                        <li><a href="his_admin_manage_acc_receivable.php">Manage Acc. Receivable</a></li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-filter-variant"></i>
-                        <span>Inventory</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_pharm_inventory.php">Pharmaceuticals</a></li>
-                        <li><a href="his_admin_equipments_inventory.php">Assets</a></li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-chart-line"></i>
-                        <span>Reports</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_accounting_records.php">Accounting Records</a></li>
-                        <li><a href="his_admin_inpatient_records.php">InPatient Records</a></li>
-                        <li><a href="his_admin_outpatient_records.php">OutPatient Records</a></li>
-                        <li><a href="his_admin_employee_records.php">Employee Records</a></li>
-                        <li><a href="his_admin_pharmaceutical_records.php">Pharmaceutical Records</a></li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-tag-outline"></i>
-                        <span>Vendors</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_add_vendor.php">Add Vendor</a></li>
-                        <li><a href="his_admin_manage_vendor.php">Manage Vendors</a></li>
-                    </ul>
-                </li>
-
-                <!-- ────── ADMINISTRATION ────── -->
-                <li class="menu-title">Administration</li>
-
-                <!-- Departments CRUD pages hidden until Stage B sector model ships (links were 404). -->
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-file-document"></i>
-                        <span>Medical Records</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_add_medical_record.php">Add Medical Record</a></li>
-                        <li><a href="his_admin_medical_records.php">View Medical Records</a></li>
-                        <li><a href="his_admin_manage_medical_record.php">Manage Medical Records</a></li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-scalpel"></i>
-                        <span>Theatre</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_add_theatre_patient.php">Add Theatre Patient</a></li>
-                        <li><a href="his_admin_surgery_records.php">Surgery Records</a></li>
-                        <li><a href="his_admin_manage_theatre_patient.php">Manage Theatre Patients</a></li>
-                        <li><a href="his_admin_add_equipment.php">Add Equipment</a></li>
-                        <li><a href="his_admin_manage_equipment.php">Manage Equipment</a></li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-account-group"></i>
-                        <span>Users</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_register.php">Add Admin User</a></li>
-                        <li><a href="his_admin_account.php">My Account</a></li>
-                    </ul>
-                </li>
-
-                <!-- ────── SETTINGS ────── -->
-                <li class="menu-title">Settings</li>
-
-                <li>
-                    <a href="javascript: void(0);">
-                        <i class="mdi mdi-account-key"></i>
-                        <span>Password Reset</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul class="nav-second-level" aria-expanded="false">
-                        <li><a href="his_admin_manage_password_resets.php">Manage Reset Requests</a></li>
-                    </ul>
-                </li>
-
-                <!-- Sign out -->
                 <li class="hms-nav-logout">
-                    <a href="his_admin_logout_partial.php">
+                    <a href="<?php echo escape_output(nex_admin_url('his_admin_logout_partial.php')); ?>">
                         <i class="mdi mdi-logout"></i>
                         <span>Sign Out</span>
                     </a>
@@ -253,7 +94,6 @@
 
             </ul>
         </div>
-        <!-- End Sidebar Menu -->
 
         <div class="clearfix"></div>
     </div>

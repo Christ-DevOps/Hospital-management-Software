@@ -4,6 +4,7 @@
     include('../security.php');
     include('assets/inc/checklogin.php');
     check_login();
+    require_once('../assets/inc/notification_events.php');
 		if(isset($_POST['discharge_patient']))
 		{
             $pat_number = $_GET['pat_number'];
@@ -23,16 +24,14 @@
             //sql to insert captured values
 			$query="UPDATE  his_patients  SET pat_discharge_status=?  WHERE pat_number = ?";
 			$stmt = $mysqli->prepare($query);
-			$rc=$stmt->bind_param('si', $pat_discharge_status, $pat_id);
-			$stmt->execute();
-			/*
-			*Use Sweet Alerts Instead Of This Fucked Up Javascript Alerts
-			*echo"<script>alert('Successfully Created Account Proceed To Log In ');</script>";
-			*/ 
-			//declare a varible which will be passed to alert function
-			if($stmt)
+			$rc=$stmt->bind_param('si', $pat_discharge_status, $pat_number);
+			if ($stmt->execute())
 			{
 				$success = "Patient Discharged";
+				$notif_pat_id = nex_resolve_pat_id($mysqli, $pat_number);
+				if ($notif_pat_id) {
+					notify_patient_discharged($mysqli, $notif_pat_id, $pat_discharge_status);
+				}
 			}
 			else {
 				$err = "Please Try Again Or Try Later";

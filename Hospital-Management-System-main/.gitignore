@@ -25,5 +25,8 @@ backend/admin/assets/images/users/*
 backend/doc/assets/images/users/*
 !backend/doc/assets/images/users/.gitkeep
 
-# PHP
+# PHP (Composer vendor dirs only — backend/vendor/phpmailer is manually
+# vendored source, not a Composer install, and must stay tracked)
 vendor/
+!/backend/vendor/
+!/backend/vendor/**

@@ -1,0 +1,32 @@
+---
+description: Mandatory Product Design Report before implementing any new feature or workspace UI
+alwaysApply: true
+---
+
+# Feature Development Process (Mandatory)
+
+Before implementing any new feature, module, page, dashboard, or workspace screen, produce a **Product Design Report** and wait for user approval. Do not write implementation code until approved.
+
+Priority: a coherent enterprise healthcare product — not disconnected CRUD pages.
+
+## Product Design Report (required sections)
+
+1. Business objective  
+2. Target user role(s) / workspace(s)  
+3. User workflow (step-by-step)  
+4. UI wireframe description (layout, primary actions, empty/error states)  
+5. Dashboard widgets  
+6. KPIs  
+7. Navigation impact (sidebar, homepage, shortcuts)  
+8. Database changes  
+9. Permissions and security  
+10. Notifications  
+11. Reports and exports  
+12. Analytics generated  
+13. Mobile responsiveness  
+14. Future extensibility  
+15. Implementation plan (files/helpers to touch; what is reused vs new)
+
+## After approval
+
+Implement only what the report covers. Fit the work into the role's workspace experience (see role-workspaces rule). Prefer evolving existing code; preserve business logic; share helpers, not identical role UIs.

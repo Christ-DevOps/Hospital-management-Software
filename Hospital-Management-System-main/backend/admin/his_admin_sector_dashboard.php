@@ -15,58 +15,71 @@ if (nex_sectors_available() && !empty($_SESSION['nex_user_id'])) {
     nex_set_active_sector($sector);
 }
 
+if ($sector === 'reception') {
+    header('Location: reception/his_admin_reception_dashboard.php');
+    exit;
+}
+
 $modules = nex_sector_modules();
 $label = $modules[$sector]['label'] ?? ucfirst($sector);
 
 $links = [
     'clinical' => [
-        ['Register patient', 'his_admin_register_patient.php'],
-        ['View patients', 'his_admin_view_patients.php'],
-        ['Medical records', 'his_admin_medical_records.php'],
+        ['Register patient', 'reception/his_admin_register_patient.php'],
+        ['View patients', 'clinical/his_admin_view_patients.php'],
+        ['Add prescription', 'clinical/his_admin_add_presc.php'],
+        ['View prescriptions', 'clinical/his_admin_view_presc.php'],
+        ['Medical records', 'clinical/his_admin_medical_records.php'],
     ],
     'reception' => [
-        ['Appointments', 'his_admin_appointments.php'],
-        ['Book appointment', 'his_admin_add_appointment.php'],
-        ['Register patient', 'his_admin_register_patient.php'],
+        ['Reception dashboard', 'reception/his_admin_reception_dashboard.php'],
+        ['Appointments', 'reception/his_admin_appointments.php'],
+        ['Book appointment', 'reception/his_admin_add_appointment.php'],
+        ['Register patient', 'reception/his_admin_register_patient.php'],
     ],
     'pharmacy' => [
-        ['Pharmaceuticals', 'his_admin_view_pharmaceuticals.php'],
-        ['Prescriptions', 'his_admin_view_presc.php'],
-        ['Pharm inventory', 'his_admin_pharm_inventory.php'],
+        ['Dispense queue', 'pharmacy/his_admin_pharmacy_queue.php'],
+        ['Pharmaceuticals', 'pharmacy/his_admin_view_pharmaceuticals.php'],
+        ['View prescriptions', 'clinical/his_admin_view_presc.php'],
+        ['Pharm inventory', 'inventory/his_admin_pharm_inventory.php'],
     ],
     'laboratory' => [
-        ['Lab tests', 'his_admin_patient_lab_test.php'],
-        ['Lab results', 'his_admin_patient_lab_result.php'],
-        ['Lab reports', 'his_admin_lab_report.php'],
+        ['Lab tests', 'laboratory/his_admin_patient_lab_test.php'],
+        ['Lab results', 'laboratory/his_admin_patient_lab_result.php'],
+        ['Lab reports', 'laboratory/his_admin_lab_report.php'],
     ],
     'hr' => [
-        ['Employees', 'his_admin_view_employee.php'],
-        ['Assign department', 'his_admin_assaign_dept.php'],
+        ['Employees', 'hr/his_admin_view_employee.php'],
+        ['Assign department', 'hr/his_admin_assaign_dept.php'],
     ],
     'payroll' => [
-        ['Add payroll', 'his_admin_add_payroll.php'],
-        ['Manage payrolls', 'his_admin_manage_payrolls.php'],
+        ['Add payroll', 'payroll/his_admin_add_payroll.php'],
+        ['Manage payrolls', 'payroll/his_admin_manage_payrolls.php'],
     ],
     'accounting' => [
-        ['Payable', 'his_admin_manage_acc_payable.php'],
-        ['Receivable', 'his_admin_manage_acc_receivable.php'],
-        ['Accounting records', 'his_admin_accounting_records.php'],
+        ['Payable', 'accounting/his_admin_manage_acc_payable.php'],
+        ['Receivable', 'accounting/his_admin_manage_acc_receivable.php'],
+        ['Accounting records', 'accounting/his_admin_accounting_records.php'],
     ],
     'inventory' => [
-        ['Pharmaceuticals', 'his_admin_pharm_inventory.php'],
-        ['Assets', 'his_admin_equipments_inventory.php'],
+        ['Pharmaceuticals', 'inventory/his_admin_pharm_inventory.php'],
+        ['Assets', 'inventory/his_admin_equipments_inventory.php'],
     ],
     'theatre' => [
-        ['Theatre patients', 'his_admin_add_theatre_patient.php'],
-        ['Surgery records', 'his_admin_surgery_records.php'],
+        ['Theatre patients', 'theatre/his_admin_add_theatre_patient.php'],
+        ['Surgery records', 'theatre/his_admin_surgery_records.php'],
     ],
     'system' => [
-        ['Manage users', 'his_admin_manage_nex_users.php'],
-        ['Password resets', 'his_admin_manage_password_resets.php'],
+        ['Manage users', 'system/his_admin_manage_nex_users.php'],
+        ['Password resets', 'system/his_admin_manage_password_resets.php'],
+        ['Create admin', 'his_admin_register.php'],
+        ['My account', 'his_admin_account.php'],
         ['Classic dashboard', 'his_admin_dashboard.php'],
     ],
 ];
+
 $sector_links = $links[$sector] ?? $links['clinical'];
+require_once __DIR__ . '/../assets/inc/nex_paths.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -83,7 +96,7 @@ $sector_links = $links[$sector] ?? $links['clinical'];
                         <div class="page-title-box d-flex justify-content-between align-items-center">
                             <div>
                                 <h4 class="page-title mb-0"><?php echo escape_output($label); ?> sector</h4>
-                                <p class="text-muted mb-0 mt-1">NexClinic operating workspace</p>
+                                <p class="text-muted mb-0 mt-1">NexClinic operating workspace · <?php echo escape_output($sector); ?>/</p>
                             </div>
                             <a href="his_admin_sector_picker.php" class="btn btn-outline-primary btn-sm">Switch sector</a>
                         </div>
@@ -92,9 +105,9 @@ $sector_links = $links[$sector] ?? $links['clinical'];
                 <div class="row">
                     <?php foreach ($sector_links as $item) { ?>
                         <div class="col-md-4 mb-3">
-                            <a href="<?php echo escape_output($item[1]); ?>" class="card-box d-block hms-hover-lift text-decoration-none">
+                            <a href="<?php echo escape_output(nex_admin_url($item[1])); ?>" class="card-box d-block hms-hover-lift text-decoration-none">
                                 <h4 class="header-title mb-1"><?php echo escape_output($item[0]); ?></h4>
-                                <span class="text-muted">Open module</span>
+                                <span class="text-muted"><?php echo escape_output($item[1]); ?></span>
                             </a>
                         </div>
                     <?php } ?>
@@ -104,7 +117,7 @@ $sector_links = $links[$sector] ?? $links['clinical'];
         <?php include('assets/inc/footer.php'); ?>
     </div>
 </div>
-<script src="assets/js/vendor.min.js"></script>
-<script src="assets/js/app.min.js"></script>
+<script src="<?php echo escape_output(nex_admin_url('assets/js/vendor.min.js')); ?>"></script>
+<script src="<?php echo escape_output(nex_admin_url('assets/js/app.min.js')); ?>"></script>
 </body>
 </html>

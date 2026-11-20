@@ -1,0 +1,27 @@
+---
+description: Per-role workspace dashboards as operational control centers — never one shared shell
+alwaysApply: true
+---
+
+# Dashboards & Workspace UX
+
+Each role owns a **dedicated control center**. Answer: **What does this user need to know / do immediately?** Prefer KPIs, charts, alerts, pending work, today's queue, and quick actions over large tables.
+
+**Forbidden:** one generic dashboard reused across roles with menu items hidden. Shared widget *components* are encouraged; identical role homepages are not.
+
+## Workspace control centers (surface these)
+
+- **Reception:** today's appointments, waiting/queue, registration time, walk-ins, emergencies, missed, quick registration/appointment/search — simple, fast, large actions  
+- **Doctor (EMR):** today's patients, queue, critical, pending lab/rad, follow-ups, recent consults, clinical alerts, quick Rx/consult, patient timeline — information-rich, minimal nav  
+- **Nursing:** assigned patients, med schedule, vitals due, critical, ward occupancy, transfers, alerts, shift notes, pending tasks — task/checklist first  
+- **Lab:** pending/collected samples, in progress, awaiting validation, critical results, equipment, TAT, quality alerts — pipeline + status  
+- **Pharmacy:** pending Rx, low/expiring stock, today's dispensing, consumption, orders, inventory value, revenue — inventory-first, barcode-ready  
+- **Accounting:** revenue today, outstanding, insurance, cash flow, transactions, payment methods, financial alerts — charts, invoices, receipts  
+- **Administration:** hospital activity, dept performance, beds, staff, admissions/discharges, inventory/revenue summaries, critical alerts — ops BI  
+- **Super Admin:** hospitals, users, licenses, system health, DB/storage, audit, security, backups, APIs — SaaS console  
+
+## Every operational page should include
+
+Overview / summary · Alerts · Quick actions · Search · Filters · Recent activity · Reports · Export / Print  
+
+Every screen should answer: **What should this user do next?** Pair insights and actions with history — never tables-only CRUD.

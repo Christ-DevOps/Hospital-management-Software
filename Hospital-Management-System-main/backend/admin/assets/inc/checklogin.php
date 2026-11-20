@@ -3,7 +3,9 @@ function check_login()
 {
     if (empty($_SESSION['ad_id'])) {
         $_SESSION['ad_id'] = '';
-        secure_redirect('index.php');
+        // Sector subfolders set $nex_admin_base = '../' so login resolves to admin/index.php
+        $login = (!empty($GLOBALS['nex_admin_base']) ? $GLOBALS['nex_admin_base'] : '') . 'index.php';
+        secure_redirect($login);
     }
     if (file_exists(dirname(__DIR__, 3) . '/assets/inc/nex_sectors.php')) {
         include_once dirname(__DIR__, 3) . '/assets/inc/nex_sectors.php';

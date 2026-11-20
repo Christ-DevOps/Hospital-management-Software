@@ -1,0 +1,35 @@
+---
+description: Role-based experience architecture — specialized workspaces, not one dashboard with hidden menus
+alwaysApply: true
+---
+
+# Role-Based Experience Architecture (Mandatory)
+
+NexClinic is **not** one dashboard with different permissions. It is specialized **workspaces** sharing one backend.
+
+Each role must feel like a dedicated product: own homepage, dashboard, sidebar, widgets, KPIs, shortcuts, workflow, notifications, reports, and quick actions. Colors/terminology may differ when they reinforce purpose.
+
+**Never** reuse the same dashboard across roles by hiding menu items. Shared PHP widgets/helpers are fine; shared role *experiences* are not.
+
+## Workspaces (design independently)
+
+| Workspace | Feels like | Purpose |
+|-----------|------------|---------|
+| Reception | Patient registration & queue system | Intake, appointments, queue, walk-in/emergency, fast search |
+| Doctor | EMR | Consult, history, prescribe, lab orders/results, follow-ups, timeline |
+| Nursing | Patient monitoring | Assigned patients, meds, vitals due, ward, transfers, checklists |
+| Laboratory | Lab ops pipeline | Samples → processing → validation → release; TAT & critical results |
+| Pharmacy | Pharmacy ERP | Dispense queue, inventory-first, low/expiring stock, suppliers |
+| Accounting | Accounting software | Billing, payments, insurance, cash flow, invoices/receipts |
+| Administration | Hospital ops center | Dept performance, beds, staff, operational KPIs, BI |
+| Super Admin | SaaS platform console | Hospitals, users, licenses, health, audit, backups, config |
+
+## UX principle
+
+Reception must never feel like Doctor; Doctor never like Accountant; Pharmacist never like Administrator. Purpose must be obvious from layout, nav, language, widgets, and workflow on first paint.
+
+## When building UI
+
+- Start from the role's workspace homepage, not the classic shared admin shell
+- Role-specific nav labels and primary actions (large/fast for reception; timeline-rich for clinical; inventory-first for pharmacy)
+- If a feature spans roles, each role gets its own surface optimized for its job (e.g. doctor *issues* Rx; pharmacy *dispenses*)

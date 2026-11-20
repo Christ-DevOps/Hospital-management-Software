@@ -4,6 +4,7 @@
     include('../security.php');
   include('assets/inc/checklogin.php');
   check_login();
+  require_once('../assets/inc/nex_prescription.php');
   $doc_id = $_SESSION['doc_id'];
 ?>
 <!DOCTYPE html>
@@ -90,11 +91,20 @@
                                                     <hr>
                                                     <h3 class="text-danger ">Patient Ailment : <?php echo escape_output($row->pres_pat_ailment); ?></h3>
                                                     <hr>
+                                                    <?php if (isset($row->pres_status)) { ?>
+                                                    <h3 class="text-info">Pharmacy : <?php echo escape_output(nex_rx_status_label($row->pres_status)); ?></h3>
+                                                    <hr>
+                                                    <?php } ?>
                                                     <h2 class="align-centre">Prescription</h2>
                                                     <hr>
-                                                    <p class="text-muted mb-4">
-                                                        <?php echo escape_output($row->pres_ins); ?>
-                                                    </p>
+                                                    <?php
+                                                    $rx_items_html = nex_rx_items_html($mysqli, (int) $row->pres_id);
+                                                    if ($rx_items_html !== '') {
+                                                        echo '<div class="text-muted mb-4">' . $rx_items_html . '</div>';
+                                                    } else {
+                                                        echo '<p class="text-muted mb-4">' . escape_output((string) $row->pres_ins) . '</p>';
+                                                    }
+                                                    ?>
                                                     <hr>
                                                    <!--
                                                     <form class="form-inline mb-4">

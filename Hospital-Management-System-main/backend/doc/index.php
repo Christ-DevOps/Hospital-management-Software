@@ -1,4 +1,4 @@
-<?php
+﻿<?php
     include('../config.php');
     include('../security.php');
     if(isset($_POST['doc_login']))
@@ -22,14 +22,13 @@
                 if (!password_verify($doc_pwd_input, $doc_pwd_hash)) {
                     migrate_password_if_legacy($mysqli, 'his_docs', 'doc_id', $doc_id, 'doc_pwd', $doc_pwd_input);
                 }
-                include_once('../assets/inc/nex_sectors.php');
-                nex_bootstrap_session_from_legacy($mysqli, 'doc', (int) $doc_id);
-                $assignments = $_SESSION['nex_assignments'] ?? [];
-                if (count($assignments) > 1) {
-                    header('location:his_doc_sector_picker.php');
-                } else {
-                    header('location:his_doc_dashboard.php');
+                if (file_exists(__DIR__ . '/../assets/inc/nex_sectors.php')) {
+                    include_once(__DIR__ . '/../assets/inc/nex_sectors.php');
+                    if (function_exists('nex_bootstrap_session_from_legacy')) {
+                        nex_bootstrap_session_from_legacy($mysqli, 'doc', (int) $doc_id);
+                    }
                 }
+                header('location:his_doc_dashboard.php');
                 exit;
             }
             else
@@ -43,9 +42,9 @@
 <html lang="en">
 <head>
         <meta charset="utf-8" />
-        <title>Hospital Management System — Doctor Login</title>
+        <title>NexClinic — Doctor Login</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta content="Hospital Management System doctor login" name="description" />
+        <meta content="NexClinic doctor login" name="description" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="theme-color" content="#2E37A4" />
         <link rel="shortcut icon" href="assets/images/favicon.ico">
@@ -71,8 +70,8 @@
 
             <div class="hms-auth-card" data-hms-auth-card>
                 <div class="hms-auth-brandmark">
-                    <img src="assets/images/logo-dark.png" alt="Hospital Management System">
-                    <span class="hms-auth-badge">Clinical Staff Portal</span>
+                    <img src="assets/images/logo-dark.png" alt="NexClinic">
+                    <span class="hms-auth-badge">NexClinic · Staff</span>
                     <h1 class="hms-auth-title">Welcome back</h1>
                     <p class="hms-auth-sub">Sign in with your doctor number and password to continue.</p>
                 </div>
@@ -100,7 +99,7 @@
                 </div>
             </div>
 
-            <p class="hms-auth-foot">&copy; <?php echo date('Y'); ?> Hospital Management System</p>
+            <p class="hms-auth-foot">&copy; <?php echo date('Y'); ?> NexClinic</p>
         </div>
 
         <script src="assets/js/vendor.min.js"></script>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 	session_start();
 	include('../config.php');
     include('../security.php');
@@ -34,7 +34,7 @@
 <html lang="en">
 <head>
         <meta charset="utf-8" />
-        <title>Hospital Management System — Doctor Password Reset</title>
+        <title>NexClinic — Doctor Password Reset</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="Request a doctor password reset" name="description" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -62,7 +62,7 @@
 
             <div class="hms-auth-card" data-hms-auth-card>
                 <div class="hms-auth-brandmark">
-                    <img src="assets/images/logo-dark.png" alt="Hospital Management System">
+                    <img src="assets/images/logo-dark.png" alt="NexClinic">
                     <span class="hms-auth-badge">Clinical Staff</span>
                     <h1 class="hms-auth-title">Reset your password</h1>
                     <p class="hms-auth-sub">Enter your email and an administrator will review the reset request.</p>
@@ -84,7 +84,7 @@
                 </div>
             </div>
 
-            <p class="hms-auth-foot">&copy; <?php echo date('Y'); ?> Hospital Management System</p>
+            <p class="hms-auth-foot">&copy; <?php echo date('Y'); ?> NexClinic</p>
         </div>
 
         <script src="assets/js/vendor.min.js"></script>

@@ -15,16 +15,12 @@
             //$pres_ins = $_POST['pres_ins'];
             //$pres_pat_ailment = $_POST['pres_pat_ailment'];
             //sql to insert captured values
-			$query="INSERT INTO  his_vitals  (vit_number, vit_pat_number, vit_bodytemp, vit_heartpulse, vit_resprate, vit_bloodpress) VALUES(?,?,?,?,?,?)";
+			$recorded_by = nex_actor_id();
+			$subject_type = 'patient';
+			$query="INSERT INTO  his_vitals  (vit_number, vit_pat_number, vit_bodytemp, vit_heartpulse, vit_resprate, vit_bloodpress, recorded_by, subject_type) VALUES(?,?,?,?,?,?,?,?)";
 			$stmt = $mysqli->prepare($query);
-			$rc=$stmt->bind_param('ssssss', $vit_number, $vit_pat_number, $vit_bodytemp, $vit_heartpulse, $vit_resprate, $vit_bloodpress);
-			$stmt->execute();
-			/*
-			*Use Sweet Alerts Instead Of This Fucked Up Javascript Alerts
-			*echo"<script>alert('Successfully Created Account Proceed To Log In ');</script>";
-			*/ 
-			//declare a varible which will be passed to alert function
-			if($stmt)
+			$rc=$stmt->bind_param('ssssssis', $vit_number, $vit_pat_number, $vit_bodytemp, $vit_heartpulse, $vit_resprate, $vit_bloodpress, $recorded_by, $subject_type);
+			if ($stmt->execute())
 			{
 				$success = "Patient Vitals Addded";
 			}

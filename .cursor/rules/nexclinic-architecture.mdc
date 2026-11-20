@@ -1,0 +1,27 @@
+---
+description: Incremental modernization — reuse logic, centralize PHP, configurable platform
+alwaysApply: true
+---
+
+# Architecture & Modernization
+
+Evolve the existing codebase. Do not redesign everything. Preserve working business logic unless replacing it with a clearer shared path.
+
+## Prefer
+
+- Reusable PHP includes/components over copy-paste pages
+- Centralized permissions (`nex_authz` and related), layouts, cards, dashboard widgets
+- Shared data access helpers for e-file, care relationships, notifications, mail
+- Config-driven catalogues (departments, services, statuses, roles) over literals in PHP/SQL
+- Analytics hooks on major workflows (trends, utilization, productivity, occupancy, wait time, insurance, finance)
+
+## Avoid
+
+- Isolated module pages with no journey context
+- Hardcoded hospital identity, currency, tax, or role names in UI logic
+- New large CRUD tables without summary, alerts, actions, and export/print
+- One shared role dashboard with items hidden by permission (build distinct workspaces; reuse widgets/helpers only)
+
+## Alignment
+
+Respect `docs/NEXCLINIC_ROLE_FUNCTIONALITY.md` sector boundaries (who writes what). New UI must not blur write ownership across sectors. Each role's workspace must feel purpose-built (see role-workspaces rule).

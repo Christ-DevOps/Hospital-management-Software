@@ -1,4 +1,4 @@
-<?php
+﻿<?php
     $doc_id = $_SESSION['doc_id'];
     $doc_number = $_SESSION['doc_number'];
     $ret="SELECT * FROM  his_docs WHERE doc_id = ? AND doc_number = ?";
@@ -74,8 +74,8 @@
         <div class="logo-box">
             <a href="his_admin_dashboard.php" class="logo text-center">
                 <span class="logo-lg">
-                    <img src="assets/images/logo-dark.png" alt="HMS" height="22">
-                    <!-- <span class="logo-lg-text-light">UBold</span> -->
+                    <img src="assets/images/logo-dark.png" alt="NexClinic" height="22">
+                    <span class="ml-1 text-white font-weight-bold" style="font-size:14px;letter-spacing:-0.02em;">NexClinic</span>
                 </span>
                 <span class="logo-sm">
                     <!-- <span class="logo-sm-text-dark">U</span> -->

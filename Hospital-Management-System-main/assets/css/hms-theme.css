@@ -1379,3 +1379,91 @@ div.dataTables_wrapper div.dataTables_filter input {
     padding-top: calc(var(--hms-topbar-height) + var(--hms-space-4));
   }
 }
+
+/* ==========================================================================
+   WORKSPACE ACCENTS — docs/NEXCLINIC_WORKSPACES.md §3.2
+   One shared palette, one accent per workspace. The accent identifies the
+   workspace at a glance without forking the design system per role.
+   ========================================================================== */
+
+.hms-workspace { --hms-ws-accent: var(--hms-primary); }
+
+.hms-ws-reception      { --hms-ws-accent: #2E37A4; }
+.hms-ws-doctor         { --hms-ws-accent: #0E9F8E; }
+.hms-ws-nursing        { --hms-ws-accent: #7B5AC7; }
+.hms-ws-laboratory     { --hms-ws-accent: #2F80ED; }
+.hms-ws-pharmacy       { --hms-ws-accent: #27AE60; }
+.hms-ws-accounting     { --hms-ws-accent: #C98A17; }
+.hms-ws-hr             { --hms-ws-accent: #C2557A; }
+.hms-ws-payroll        { --hms-ws-accent: #8A6A3E; }
+.hms-ws-inventory      { --hms-ws-accent: #3E7C8A; }
+.hms-ws-theatre        { --hms-ws-accent: #B0453F; }
+.hms-ws-administration { --hms-ws-accent: #2E37A4; }
+.hms-ws-system         { --hms-ws-accent: #4A4A6A; }
+
+/* Workspace identity block at the top of the sidebar */
+.hms-workspace-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  margin-top: var(--hms-topbar-height);
+  border-bottom: 1px solid var(--hms-sidebar-border);
+  border-left: 3px solid var(--hms-ws-accent);
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--hms-ws-accent) 10%, transparent),
+    transparent);
+}
+
+.hms-workspace-brand > .mdi {
+  font-size: 26px;
+  line-height: 1;
+  color: var(--hms-ws-accent);
+  flex-shrink: 0;
+}
+
+.hms-workspace-brand-text { display: flex; flex-direction: column; min-width: 0; }
+
+.hms-workspace-label {
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: .01em;
+  color: var(--hms-sidebar-text, #2b2b3c);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hms-workspace-tagline {
+  font-size: 11px;
+  opacity: .65;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The sidebar's scroll padding already accounts for the topbar; the brand
+   block supplies its own offset, so drop the duplicate. */
+.hms-workspace .slimscroll-menu { padding-top: 0 !important; }
+
+/* Active item picks up the workspace accent */
+.hms-workspace #side-menu > li.menuitem-active > a,
+.hms-workspace #side-menu .nav-second-level > li.menuitem-active > a {
+  color: var(--hms-ws-accent) !important;
+  border-left: 3px solid var(--hms-ws-accent);
+  background: color-mix(in srgb, var(--hms-ws-accent) 8%, transparent);
+  font-weight: 600;
+}
+
+.hms-workspace #side-menu > li.menuitem-active > a .mdi { color: var(--hms-ws-accent) !important; }
+
+.hms-workspace .menu-title:first-of-type { margin-top: var(--hms-space-3); }
+
+/* Collapsed sidebar: brand shrinks to the icon */
+.enlarged .hms-workspace-brand { justify-content: center; padding: 14px 0; }
+.enlarged .hms-workspace-brand-text { display: none; }
+
+@supports not (color: color-mix(in srgb, red 10%, transparent)) {
+  .hms-workspace-brand { background: var(--hms-sidebar-bg); }
+  .hms-workspace #side-menu > li.menuitem-active > a { background: var(--hms-primary-soft); }
+}

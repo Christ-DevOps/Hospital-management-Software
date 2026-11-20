@@ -1,0 +1,33 @@
+---
+description: NexClinic Enterprise product philosophy, workflow model, and design-first gate
+alwaysApply: true
+---
+
+# NexClinic Enterprise — Product Philosophy
+
+We build a commercial Hospital Operating System sold to hospitals, clinics, and diagnostic centers — not a school HMS demo.
+
+Evaluate every change by whether it improves: patient care, operations, staff productivity, executive visibility, compliance, revenue, cost, security, scalability, or maintainability. Never add features only because classic HMIS systems have them.
+
+## Think workflows, not modules
+
+Model the patient journey. Features must integrate into it — no isolated CRUD pages or disconnected processes:
+
+Appointment → Reception → Registration → Queue → Triage → Consultation → Laboratory → Radiology → Pharmacy → Billing → Admission → Ward → Discharge → Follow-up
+
+## Design before code (required)
+
+Do not implement until a Product Design Report is written and the user approves it (see `nexclinic-feature-design` rule). The short ops check still applies inside that report:
+
+1. Why it improves hospital operations  
+2. How it fits the patient workflow  
+3. Which roles / workspaces benefit  
+4. Which dashboards surface it  
+5. Which reports include it  
+6. Which analytics it enables  
+
+Prefer evolving existing code; preserve business logic; centralize shared PHP (authz, layouts, cards, widgets) while giving each role its own experience.
+
+## Configuration (SaaS mindset)
+
+No hardcoding departments, statuses, roles, specialties, categories, or service types — use configurable tables / settings. Branding, services, insurance, payments, languages, hours, queue rules, notifications, gateways, security policies, and document templates must be configurable.

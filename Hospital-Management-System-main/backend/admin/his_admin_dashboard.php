@@ -2,6 +2,7 @@
   session_start();
   include('../config.php');
   include('../security.php');
+  include('../assets/inc/nex_paths.php');
   include('assets/inc/checklogin.php');
   check_login();
   $aid = $_SESSION['ad_id'];
@@ -91,7 +92,7 @@
                             <div class="col-12">
                                 <div class="page-title-box">
                                     <div>
-                                        <h4 class="page-title mb-0">Admin Dashboard</h4>
+                                        <h4 class="page-title mb-0">NexClinic Admin</h4>
                                         <p class="text-muted mb-0 mt-1" style="font-size:13px;">Hospital overview · last 7 days activity</p>
                                     </div>
                                     <div class="d-flex gap-2 flex-wrap">

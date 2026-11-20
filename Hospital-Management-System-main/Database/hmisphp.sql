@@ -144,6 +144,8 @@ INSERT INTO `his_equipments` (`eqp_id`, `eqp_code`, `eqp_name`, `eqp_vendor`, `e
 
 CREATE TABLE `his_laboratory` (
   `lab_id` int(20) NOT NULL,
+  `ordered_by` int(20) DEFAULT NULL,
+  `validated_by` int(20) DEFAULT NULL,
   `lab_pat_name` varchar(200) DEFAULT NULL,
   `lab_pat_ailment` varchar(200) DEFAULT NULL,
   `lab_pat_number` varchar(200) DEFAULT NULL,
@@ -172,6 +174,7 @@ INSERT INTO `his_laboratory` (`lab_id`, `lab_pat_name`, `lab_pat_ailment`, `lab_
 
 CREATE TABLE `his_medical_records` (
   `mdr_id` int(20) NOT NULL,
+  `authored_by` int(20) DEFAULT NULL,
   `mdr_number` varchar(200) DEFAULT NULL,
   `mdr_pat_name` varchar(200) DEFAULT NULL,
   `mdr_pat_adr` varchar(200) DEFAULT NULL,
@@ -200,6 +203,7 @@ INSERT INTO `his_medical_records` (`mdr_id`, `mdr_number`, `mdr_pat_name`, `mdr_
 
 CREATE TABLE `his_patients` (
   `pat_id` int(20) NOT NULL,
+  `registered_by` int(20) DEFAULT NULL,
   `pat_fname` varchar(200) DEFAULT NULL,
   `pat_lname` varchar(200) DEFAULT NULL,
   `pat_sex` varchar(20) DEFAULT NULL,
@@ -209,6 +213,7 @@ CREATE TABLE `his_patients` (
   `pat_dob` varchar(200) DEFAULT NULL,
   `pat_age` varchar(200) DEFAULT NULL,
   `pat_number` varchar(200) DEFAULT NULL,
+  `efile_uuid` char(36) DEFAULT NULL,
   `pat_addr` varchar(200) DEFAULT NULL,
   `pat_village` varchar(200) DEFAULT NULL,
   `pat_division` varchar(200) DEFAULT NULL,
@@ -253,6 +258,93 @@ CREATE TABLE `his_appointments` (
   `appt_reason` text,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `his_visits`
+-- Reception / queue spine (check-in, walk-in, emergency, registration timing)
+--
+
+CREATE TABLE `his_visits` (
+  `visit_id` int(20) NOT NULL,
+  `facility_id` int(20) DEFAULT NULL,
+  `pat_id` int(20) NOT NULL,
+  `appt_id` int(20) DEFAULT NULL,
+  `visit_type` varchar(40) NOT NULL DEFAULT 'scheduled',
+  `visit_status` varchar(40) NOT NULL DEFAULT 'waiting',
+  `queue_number` int(11) NOT NULL DEFAULT 0,
+  `priority` tinyint(3) NOT NULL DEFAULT 0,
+  `arrived_at` datetime NOT NULL,
+  `registration_started_at` datetime DEFAULT NULL,
+  `registration_completed_at` datetime DEFAULT NULL,
+  `called_at` datetime DEFAULT NULL,
+  `completed_at` datetime DEFAULT NULL,
+  `created_by` int(20) DEFAULT NULL,
+  `notes` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `his_notifications`
+--
+
+CREATE TABLE `his_notifications` (
+  `notif_id` int(20) NOT NULL,
+  `pat_id` int(20) DEFAULT NULL,
+  `notif_type` varchar(40) NOT NULL,
+  `recipient_email` varchar(200) DEFAULT NULL,
+  `subject` varchar(255) DEFAULT NULL,
+  `body_html` longtext,
+  `status` enum('pending','sent','failed') NOT NULL DEFAULT 'pending',
+  `error_message` varchar(500) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `sent_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `nex_audit_log`
+-- NOTE: depends on nex_users (Stage B.2 — Database/migrations/2026_08_21_stage_b_sectors.sql),
+-- which is not otherwise mirrored in this dump yet. Run Stage B.2 before this
+-- table is meaningful; nex_audit_access()/nex_audit() no-op gracefully if it's absent.
+--
+
+CREATE TABLE `nex_audit_log` (
+  `audit_id` bigint(20) NOT NULL,
+  `actor_user_ref` varchar(80) DEFAULT NULL,
+  `actor_tier` varchar(40) DEFAULT NULL,
+  `action` varchar(120) NOT NULL,
+  `outcome` varchar(40) DEFAULT NULL,
+  `entity_type` varchar(80) DEFAULT NULL,
+  `entity_id` varchar(80) DEFAULT NULL,
+  `detail` text,
+  `ip_address` varchar(64) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `break_glass` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `nex_care_relationship`
+-- "Is this my patient?" — see Database/migrations/2026_07_26_care_relationship.sql.
+-- NOTE: FK to nex_users (Stage B.2, not otherwise mirrored in this dump yet).
+--
+
+CREATE TABLE `nex_care_relationship` (
+  `rel_id` int(20) NOT NULL,
+  `pat_id` int(20) NOT NULL,
+  `user_id` int(20) NOT NULL,
+  `relation` enum('attending','consulting','nurse','covering') NOT NULL DEFAULT 'attending',
+  `started_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ended_at` timestamp NULL DEFAULT NULL,
+  `created_by` int(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -359,6 +451,7 @@ INSERT INTO `his_pharmaceuticals_categories` (`pharm_cat_id`, `pharm_cat_name`, 
 
 CREATE TABLE `his_prescriptions` (
   `pres_id` int(200) NOT NULL,
+  `prescribed_by` int(20) DEFAULT NULL,
   `pres_pat_name` varchar(200) DEFAULT NULL,
   `pres_pat_age` varchar(200) DEFAULT NULL,
   `pres_pat_number` varchar(200) DEFAULT NULL,
@@ -367,8 +460,45 @@ CREATE TABLE `his_prescriptions` (
   `pres_pat_type` varchar(200) DEFAULT NULL,
   `pres_date` timestamp(4) NOT NULL DEFAULT CURRENT_TIMESTAMP(4) ON UPDATE CURRENT_TIMESTAMP(4),
   `pres_pat_ailment` varchar(200) DEFAULT NULL,
-  `pres_ins` longtext
+  `pres_ins` longtext,
+  `pres_status` varchar(40) NOT NULL DEFAULT 'pending',
+  `dispensed_by` int(20) DEFAULT NULL,
+  `dispensed_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `his_prescription_items`
+--
+
+CREATE TABLE `his_prescription_items` (
+  `item_id` int(20) NOT NULL AUTO_INCREMENT,
+  `pres_id` int(20) NOT NULL,
+  `phar_id` int(20) DEFAULT NULL,
+  `drug_name` varchar(200) NOT NULL,
+  `qty` int(11) NOT NULL DEFAULT 1,
+  `dosage` varchar(120) DEFAULT NULL,
+  `frequency` varchar(120) DEFAULT NULL,
+  `duration` varchar(120) DEFAULT NULL,
+  `notes` varchar(255) DEFAULT NULL,
+  `qty_dispensed` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`item_id`),
+  KEY `idx_rx_item_pres` (`pres_id`),
+  KEY `idx_rx_item_phar` (`phar_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Table structure for table `his_prescription_dispenses`
+--
+
+CREATE TABLE `his_prescription_dispenses` (
+  `dispense_id` int(20) NOT NULL AUTO_INCREMENT,
+  `pres_id` int(20) NOT NULL,
+  `dispensed_by` int(20) DEFAULT NULL,
+  `dispensed_at` datetime NOT NULL,
+  `notes` text,
+  PRIMARY KEY (`dispense_id`),
+  KEY `idx_rx_dispense_pres` (`pres_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `his_prescriptions`
@@ -452,6 +582,8 @@ INSERT INTO `his_vendor` (`v_id`, `v_number`, `v_name`, `v_adr`, `v_mobile`, `v_
 
 CREATE TABLE `his_vitals` (
   `vit_id` int(20) NOT NULL,
+  `subject_type` ENUM('patient','employee') NOT NULL DEFAULT 'patient',
+  `recorded_by` int(20) DEFAULT NULL,
   `vit_number` varchar(200) DEFAULT NULL,
   `vit_pat_number` varchar(200) DEFAULT NULL,
   `vit_bodytemp` varchar(200) DEFAULT NULL,
@@ -525,7 +657,8 @@ ALTER TABLE `his_medical_records`
 -- Indexes for table `his_patients`
 --
 ALTER TABLE `his_patients`
-  ADD PRIMARY KEY (`pat_id`);
+  ADD PRIMARY KEY (`pat_id`),
+  ADD UNIQUE KEY `uq_patients_efile_uuid` (`efile_uuid`);
 
 --
 -- Indexes for table `his_appointments`
@@ -536,6 +669,26 @@ ALTER TABLE `his_appointments`
   ADD KEY `idx_appt_doc` (`doc_id`),
   ADD KEY `idx_appt_pat` (`pat_id`),
   ADD KEY `idx_appt_status` (`appt_status`);
+
+--
+-- Indexes for table `his_visits`
+--
+ALTER TABLE `his_visits`
+  ADD PRIMARY KEY (`visit_id`),
+  ADD KEY `idx_visit_arrived` (`arrived_at`),
+  ADD KEY `idx_visit_status` (`visit_status`),
+  ADD KEY `idx_visit_type` (`visit_type`),
+  ADD KEY `idx_visit_pat` (`pat_id`),
+  ADD KEY `idx_visit_appt` (`appt_id`),
+  ADD KEY `idx_visit_queue_day` (`arrived_at`, `queue_number`);
+
+--
+-- Indexes for table `his_notifications`
+--
+ALTER TABLE `his_notifications`
+  ADD PRIMARY KEY (`notif_id`),
+  ADD KEY `idx_notif_pat_id` (`pat_id`),
+  ADD KEY `idx_notif_status` (`status`);
 
 --
 -- Indexes for table `his_patient_transfers`
@@ -565,7 +718,8 @@ ALTER TABLE `his_pharmaceuticals_categories`
 -- Indexes for table `his_prescriptions`
 --
 ALTER TABLE `his_prescriptions`
-  ADD PRIMARY KEY (`pres_id`);
+  ADD PRIMARY KEY (`pres_id`),
+  ADD KEY `idx_pres_status` (`pres_status`);
 
 --
 -- Indexes for table `his_pwdresets`
@@ -640,6 +794,16 @@ ALTER TABLE `his_patients`
 --
 ALTER TABLE `his_appointments`
   MODIFY `appt_id` int(20) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `his_visits`
+--
+ALTER TABLE `his_visits`
+  MODIFY `visit_id` int(20) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `his_notifications`
+--
+ALTER TABLE `his_notifications`
+  MODIFY `notif_id` int(20) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `his_patient_transfers`
 --

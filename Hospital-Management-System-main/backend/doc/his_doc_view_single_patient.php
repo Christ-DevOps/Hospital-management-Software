@@ -5,6 +5,7 @@
   include('../assets/inc/patient_cameroon_fields.php');
   include('assets/inc/checklogin.php');
   check_login();
+  require_once('../assets/inc/nex_prescription.php');
 
   $doc_id=$_SESSION['doc_id'];
 ?>
@@ -120,28 +121,35 @@
                                     <!--Medical History-->
                                     <div class="tab-content">
                                         <div class="tab-pane show active" id="aboutme">
+                                            <div class="mb-3">
+                                                <a class="btn btn-sm btn-primary" href="his_doc_add_single_pres.php?pat_number=<?php echo escape_output($_GET['pat_number'] ?? ''); ?>">Prescribe</a>
+                                            </div>
                                              <ul class="list-unstyled timeline-sm">
                                                 <?php
                                                     $pres_pat_number =$_GET['pat_number'];
-                                                    $ret="SELECT  * FROM his_prescriptions WHERE pres_pat_number =?";
+                                                    $ret="SELECT  * FROM his_prescriptions WHERE pres_pat_number =? ORDER BY pres_date DESC";
                                             $stmt= $mysqli->prepare($ret) ;
                                             $stmt->bind_param('s',$pres_pat_number);
                                                     $stmt->execute() ;//ok
                                                     $res=$stmt->get_result();
-                                                    //$cnt=1;
                                                     
                                                     while($row=$res->fetch_object())
                                                         {
-                                                    $mysqlDateTime = $row->pres_date; //trim timestamp to date
+                                                    $mysqlDateTime = $row->pres_date;
+                                                    $rx_lines = nex_rx_items_html($mysqli, (int) $row->pres_id);
 
                                                 ?>
                                                     <li class="timeline-sm-item">
                                                         <span class="timeline-sm-date"><?php echo date("Y-m-d", strtotime($mysqlDateTime));?></span>
-                                                        <h5 class="mt-0 mb-1"><?php echo escape_output($row->pres_pat_ailment); ?></h5>
-                                                        <p class="text-muted mt-2">
-                                                            <?php echo escape_output($row->pres_ins); ?>
-                                                        </p>
-
+                                                        <h5 class="mt-0 mb-1">
+                                                            <?php echo escape_output($row->pres_pat_ailment); ?>
+                                                            <?php if (isset($row->pres_status)) { ?>
+                                                                <span class="badge badge-info ml-1"><?php echo escape_output(nex_rx_status_label($row->pres_status)); ?></span>
+                                                            <?php } ?>
+                                                        </h5>
+                                                        <div class="text-muted mt-2">
+                                                            <?php echo $rx_lines !== '' ? $rx_lines : escape_output((string) $row->pres_ins); ?>
+                                                        </div>
                                                     </li>
                                                 <?php }?>
                                             </ul>

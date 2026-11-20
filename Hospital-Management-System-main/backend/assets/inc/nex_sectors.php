@@ -87,6 +87,11 @@ function nex_user_sectors() {
 
 function nex_has_sector($sector_code) {
     if (!empty($_SESSION['nex_is_system_admin'])) {
+        // Superadmin can reach any sector, but never silently: every override
+        // is written to the audit log, not just granted and forgotten. This
+        // used to be a blanket `return true` with no trace of who used it.
+        global $mysqli;
+        nex_audit_access($mysqli, 'sector.override', ['entity_type' => 'sector', 'entity_id' => $sector_code], 'granted:superadmin');
         return true;
     }
     return isset(nex_user_sectors()[$sector_code]);
@@ -118,7 +123,7 @@ function nex_sector_modules() {
     return [
         'system' => ['label' => 'System', 'href' => 'his_admin_sector_dashboard.php?sector=system', 'portal' => 'admin'],
         'clinical' => ['label' => 'Clinical', 'href' => 'his_admin_sector_dashboard.php?sector=clinical', 'portal' => 'both'],
-        'reception' => ['label' => 'Reception', 'href' => 'his_admin_sector_dashboard.php?sector=reception', 'portal' => 'admin'],
+        'reception' => ['label' => 'Reception', 'href' => 'reception/his_admin_reception_dashboard.php', 'portal' => 'admin'],
         'pharmacy' => ['label' => 'Pharmacy', 'href' => 'his_admin_sector_dashboard.php?sector=pharmacy', 'portal' => 'both'],
         'laboratory' => ['label' => 'Laboratory', 'href' => 'his_admin_sector_dashboard.php?sector=laboratory', 'portal' => 'both'],
         'theatre' => ['label' => 'Theatre', 'href' => 'his_admin_sector_dashboard.php?sector=theatre', 'portal' => 'admin'],
@@ -132,15 +137,29 @@ function nex_sector_modules() {
 /** Script basename → required sector (enforcement map). */
 function nex_script_sector_map() {
     return [
-        'his_admin_register_patient.php' => 'clinical',
+        'his_admin_register_patient.php' => 'reception',
         'his_admin_view_patients.php' => 'clinical',
         'his_admin_manage_patient.php' => 'clinical',
         'his_admin_appointments.php' => 'reception',
         'his_admin_add_appointment.php' => 'reception',
         'his_admin_manage_appointment.php' => 'reception',
+        'his_admin_reception_dashboard.php' => 'reception',
+        'his_admin_reception_action.php' => 'reception',
+        'his_admin_register.php' => 'system',
+        'his_admin_account.php' => 'system',
+        'his_admin_pwd_reset.php' => 'system',
+
         'his_admin_add_pharmaceuticals.php' => 'pharmacy',
         'his_admin_view_pharmaceuticals.php' => 'pharmacy',
         'his_admin_manage_pharmaceuticals.php' => 'pharmacy',
+        'his_admin_pharmacy_queue.php' => 'pharmacy',
+        'his_admin_pharmacy_dispense.php' => 'pharmacy',
+        'his_admin_add_presc.php' => 'clinical',
+        'his_admin_view_presc.php' => 'clinical',
+        'his_admin_manage_presc.php' => 'clinical',
+        'his_admin_add_single_pres.php' => 'clinical',
+        'his_admin_view_single_pres.php' => 'clinical',
+        'his_admin_upate_single_pres.php' => 'clinical',
         'his_admin_patient_lab_test.php' => 'laboratory',
         'his_admin_patient_lab_result.php' => 'laboratory',
         'his_admin_lab_report.php' => 'laboratory',
@@ -200,3 +219,107 @@ function nex_resolve_pat_id($mysqli, $pat_number) {
     $stmt->close();
     return $row ? (int) $row->pat_id : null;
 }
+
+/** Canonical actor id for provenance columns. Null if session predates nex_users. */
+function nex_actor_id() {
+    return isset($_SESSION['nex_user_id']) ? (int) $_SESSION['nex_user_id'] : null;
+}
+
+/** Axis 1 — platform tier from session or legacy tables. */
+function nex_platform_tier() {
+    if (!empty($_SESSION['nex_platform_tier'])) {
+        return $_SESSION['nex_platform_tier'];
+    }
+    if (!empty($_SESSION['nex_is_system_admin'])) {
+        return 'superadmin';
+    }
+    if (!empty($_SESSION['ad_id'])) {
+        return 'admin';
+    }
+    return 'standard';
+}
+
+function nex_is_superadmin() {
+    return nex_platform_tier() === 'superadmin';
+}
+
+function nex_is_hospital_admin() {
+    $t = nex_platform_tier();
+    return $t === 'admin' || $t === 'superadmin';
+}
+
+/** Cached per-request (not per-call) check that the audit table exists. */
+function nex_audit_available() {
+    static $ok = null;
+    if ($ok !== null) {
+        return $ok;
+    }
+    global $mysqli;
+    if (!$mysqli) {
+        $ok = false;
+        return $ok;
+    }
+    $r = @$mysqli->query("SHOW TABLES LIKE 'nex_audit_log'");
+    $ok = ($r && $r->num_rows > 0);
+    return $ok;
+}
+
+/** 'nex:12' / 'admin:1' / 'doc:6' — whichever session identity is active. */
+function nex_current_actor_ref() {
+    if (!empty($_SESSION['nex_user_id'])) {
+        return 'nex:' . (int) $_SESSION['nex_user_id'];
+    } elseif (!empty($_SESSION['ad_id'])) {
+        return 'admin:' . (int) $_SESSION['ad_id'];
+    } elseif (!empty($_SESSION['doc_id'])) {
+        return 'doc:' . (int) $_SESSION['doc_id'];
+    }
+    return null;
+}
+
+/**
+ * Write audit row if nex_audit_log exists. Never throws to caller.
+ */
+function nex_audit($mysqli, $action, $entity_type = null, $entity_id = null, $detail = null) {
+    if (!$mysqli || !nex_audit_available()) {
+        return false;
+    }
+    $actor = nex_current_actor_ref();
+    $tier = nex_platform_tier();
+    $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+    $stmt = $mysqli->prepare('INSERT INTO nex_audit_log (actor_user_ref, actor_tier, action, entity_type, entity_id, detail, ip_address) VALUES (?,?,?,?,?,?,?)');
+    if (!$stmt) {
+        return false;
+    }
+    $stmt->bind_param('sssssss', $actor, $tier, $action, $entity_type, $entity_id, $detail, $ip);
+    $ok = $stmt->execute();
+    $stmt->close();
+    return $ok;
+}
+
+/**
+ * Log an access decision (grant, denial, or break-glass) to nex_audit_log.
+ * Used by both the break-glass override (nex_care.php) and the
+ * authorization kernel (nex_authz.php) so every decision — not just writes —
+ * lands in one place. Never throws.
+ */
+function nex_audit_access($mysqli, $action, array $ctx, $outcome, $break_glass = false) {
+    if (!$mysqli || !nex_audit_available()) {
+        return false;
+    }
+    $actor = nex_current_actor_ref();
+    $tier = nex_platform_tier();
+    $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+    $entity_type = $ctx['entity_type'] ?? null;
+    $entity_id = isset($ctx['entity_id']) ? (string) $ctx['entity_id'] : null;
+    $detail = !empty($ctx) ? json_encode($ctx) : null;
+    $bg = $break_glass ? 1 : 0;
+    $stmt = $mysqli->prepare('INSERT INTO nex_audit_log (actor_user_ref, actor_tier, action, outcome, entity_type, entity_id, detail, ip_address, break_glass) VALUES (?,?,?,?,?,?,?,?,?)');
+    if (!$stmt) {
+        return false;
+    }
+    $stmt->bind_param('ssssssssi', $actor, $tier, $action, $outcome, $entity_type, $entity_id, $detail, $ip, $bg);
+    $ok = $stmt->execute();
+    $stmt->close();
+    return $ok;
+}
+

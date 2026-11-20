@@ -3,24 +3,21 @@
 	session_start();
 	include('../config.php');
     include('../security.php');
-  include('assets/inc/checklogin.php');
-  check_login();
+    // Public create-admin screen (seeded admins can also open it while logged in).
+    // Do not require check_login() — otherwise the page only redirects to login under php -S / any host.
 		if(isset($_POST['admin_sup']))
 		{
+			if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
+				$err = 'Invalid CSRF token.';
+			} else {
 			$ad_fname=$_POST['ad_fname'];
 			$ad_lname=$_POST['ad_lname'];
 			$ad_email=$_POST['ad_email'];
-			$ad_pwd=password_hash($_POST['ad_pwd'], PASSWORD_DEFAULT);//double encrypt to increase security
-            //sql to insert captured values
+			$ad_pwd=password_hash($_POST['ad_pwd'], PASSWORD_DEFAULT);
 			$query="insert into his_admin (ad_fname, ad_lname, ad_email, ad_pwd) values(?,?,?,?)";
 			$stmt = $mysqli->prepare($query);
 			$rc=$stmt->bind_param('ssss', $ad_fname, $ad_lname, $ad_email, $ad_pwd);
 			$stmt->execute();
-			/*
-			*Use Sweet Alerts Instead Of This Fucked Up Javascript Alerts
-			*echo"<script>alert('Successfully Created Account Proceed To Log In ');</script>";
-			*/ 
-			//declare a varible which will be passed to alert function
 			if($stmt)
 			{
 				$success = "Created Account Proceed To Log In";
@@ -28,8 +25,8 @@
 			else {
 				$err = "Please Try Again Or Try Later";
 			}
-			
-			
+			$stmt->close();
+			}
 		}
 ?>
 <!--End Server Side-->
@@ -74,12 +71,12 @@
     </head>
     <body class="authentication-bg authentication-bg-pattern hms-auth-page">
         <div class="hms-auth-stage">
-            <a href="his_admin_dashboard.php" class="hms-auth-back"><i class="mdi mdi-arrow-left"></i> Back to dashboard</a>
+            <a href="index.php" class="hms-auth-back"><i class="mdi mdi-arrow-left"></i> Back to login</a>
 
             <div class="hms-auth-card is-wide" data-hms-auth-card>
                 <div class="hms-auth-brandmark">
-                    <img src="assets/images/logo-dark.png" alt="Hospital Management System">
-                    <span class="hms-auth-badge">Administrator Portal</span>
+                    <img src="assets/images/logo-dark.png" alt="NexClinic">
+                    <span class="hms-auth-badge">NexClinic · Admin</span>
                     <h1 class="hms-auth-title">Create admin account</h1>
                     <p class="hms-auth-sub">Add a new administrator. It only takes a minute.</p>
                 </div>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
     include('../config.php');
     include('../security.php');
     if(isset($_POST['admin_login']))
@@ -21,14 +21,32 @@
                 if (!password_verify($ad_pwd_input, $ad_pwd_hash)) {
                     migrate_password_if_legacy($mysqli, 'his_admin', 'ad_id', $ad_id, 'ad_pwd', $ad_pwd_input);
                 }
-                include_once('../assets/inc/nex_sectors.php');
-                nex_bootstrap_session_from_legacy($mysqli, 'admin', (int) $ad_id);
-                $assignments = $_SESSION['nex_assignments'] ?? [];
-                if (count($assignments) > 1) {
-                    header('location:his_admin_sector_picker.php');
-                } else {
-                    header('location:his_admin_dashboard.php');
+                // Axis 1: platform tier (defaults to admin if column not migrated yet)
+                $_SESSION['nex_platform_tier'] = 'admin';
+                try {
+                    $tier_q = $mysqli->prepare('SELECT platform_tier FROM his_admin WHERE ad_id=? LIMIT 1');
+                    if ($tier_q) {
+                        $tier_q->bind_param('i', $ad_id);
+                        $tier_q->execute();
+                        $tier_q->bind_result($pt);
+                        if ($tier_q->fetch() && $pt) {
+                            $_SESSION['nex_platform_tier'] = $pt;
+                        }
+                        $tier_q->close();
+                    }
+                } catch (\Throwable $e) {
+                    // platform_tier column not migrated on this database yet; keep default tier.
                 }
+                if (file_exists(__DIR__ . '/../assets/inc/nex_sectors.php')) {
+                    include_once(__DIR__ . '/../assets/inc/nex_sectors.php');
+                    if (function_exists('nex_bootstrap_session_from_legacy')) {
+                        nex_bootstrap_session_from_legacy($mysqli, 'admin', (int) $ad_id);
+                    }
+                    if (function_exists('nex_audit')) {
+                        nex_audit($mysqli, 'login.admin', 'his_admin', (string) $ad_id, null);
+                    }
+                }
+                header('location:his_admin_dashboard.php');
                 exit;
             }
             else
@@ -42,9 +60,9 @@
 <html lang="en">
 <head>
         <meta charset="utf-8" />
-        <title>Hospital Management System — Admin Login</title>
+        <title>NexClinic — Admin Login</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta content="Hospital Management System administrator login" name="description" />
+        <meta content="NexClinic administrator login" name="description" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="theme-color" content="#2E37A4" />
         <link rel="shortcut icon" href="assets/images/favicon.ico">
@@ -82,8 +100,8 @@
 
             <div class="hms-auth-card" data-hms-auth-card>
                 <div class="hms-auth-brandmark">
-                    <img src="assets/images/logo-dark.png" alt="Hospital Management System">
-                    <span class="hms-auth-badge">Administrator Portal</span>
+                    <img src="assets/images/logo-dark.png" alt="NexClinic">
+                    <span class="hms-auth-badge">NexClinic · Admin</span>
                     <h1 class="hms-auth-title">Welcome back</h1>
                     <p class="hms-auth-sub">Sign in with your admin email and password to continue.</p>
                 </div>
@@ -108,10 +126,12 @@
 
                 <div class="hms-auth-links">
                     <a href="his_admin_pwd_reset.php">Forgot your password?</a>
+                    <span class="mx-1">·</span>
+                    <a href="his_admin_register.php">Create admin account</a>
                 </div>
             </div>
 
-            <p class="hms-auth-foot">&copy; <?php echo date('Y'); ?> Hospital Management System</p>
+            <p class="hms-auth-foot">&copy; <?php echo date('Y'); ?> NexClinic</p>
         </div>
 
         <script src="assets/js/vendor.min.js"></script>

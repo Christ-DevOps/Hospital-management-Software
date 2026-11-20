@@ -5,6 +5,7 @@
 	include('../assets/inc/patient_cameroon_fields.php');
 	include('assets/inc/checklogin.php');
 	check_login();
+	require_once('../assets/inc/notification_events.php');
 	if (isset($_POST['add_patient'])) {
 		$collected = nex_collect_patient_post(true);
 		if (!$collected['ok']) {
@@ -12,15 +13,17 @@
 		} else {
 			$d = $collected['data'];
 			$pat_reg_hour = date('H:i:s');
+			$efile_uuid = nex_generate_uuid_v4();
+			$registered_by = nex_actor_id();
 			$query = "INSERT INTO his_patients (
 				pat_fname, pat_lname, pat_sex, pat_marital_status, pat_religion, pat_reg_hour,
-				pat_age, pat_dob, pat_number, pat_phone, pat_email, pat_type, pat_addr,
+				pat_age, pat_dob, pat_number, efile_uuid, pat_phone, pat_email, pat_type, pat_addr,
 				pat_village, pat_division, pat_subdivision, pat_blood_group,
-				pat_emergency_name, pat_emergency_phone, pat_ailment
-			) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				pat_emergency_name, pat_emergency_phone, pat_ailment, registered_by
+			) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			$stmt = $mysqli->prepare($query);
 			$stmt->bind_param(
-				'ssssssssssssssssssss',
+				'sssssssssssssssssssssi',
 				$d['pat_fname'],
 				$d['pat_lname'],
 				$d['pat_sex'],
@@ -30,6 +33,7 @@
 				$d['pat_age'],
 				$d['pat_dob'],
 				$d['pat_number'],
+				$efile_uuid,
 				$d['pat_phone'],
 				$d['pat_email'],
 				$d['pat_type'],
@@ -40,10 +44,12 @@
 				$d['pat_blood_group'],
 				$d['pat_emergency_name'],
 				$d['pat_emergency_phone'],
-				$d['pat_ailment']
+				$d['pat_ailment'],
+				$registered_by
 			);
 			if ($stmt->execute()) {
 				$success = "Patient Details Added";
+				notify_patient_registered($mysqli, $mysqli->insert_id, $efile_uuid);
 			} else {
 				$err = "Please Try Again Or Try Later";
 			}
